@@ -1,0 +1,60 @@
+.cursor-active,
+.cursor-active * {
+  cursor: none !important;
+}
+
+.aurora-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  border-radius: 9999px;
+  will-change: transform, width, height, opacity;
+  mix-blend-mode: difference;
+}
+
+.aurora-cursor--dot {
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
+  background: #f4f2ff;
+  transition:
+    width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s linear;
+}
+
+.aurora-cursor--ring {
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  margin-top: -18px;
+  border: 1px solid rgba(244, 242, 255, 0.6);
+  transition:
+    width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s linear,
+    opacity 0.2s linear,
+    background-color 0.2s linear;
+}
+
+/* Hover-target states (set imperatively via classList) */
+.aurora-cursor--ring.is-link {
+  width: 64px;
+  height: 64px;
+  margin-left: -32px;
+  margin-top: -32px;
+  border-color: rgba(91, 228, 255, 0.9);
+  background-color: rgba(91, 228, 255, 0.08);
+}
+
+.aurora-cursor--dot.is-link {
+  opacity: 0;
+}
+
+.aurora-cursor--ring.is-hidden,
+.aurora-cursor--dot.is-hidden {
+  opacity: 0;
+}

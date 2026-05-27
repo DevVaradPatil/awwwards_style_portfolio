@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Aurora Compute — Design Tokens
+   --------------------------------------------------------------- */
+@theme {
+  /* Surfaces */
+  --color-void: #08070d;
+  --color-raise: #11101a;
+  --color-elev: #1b1a27;
+
+  /* Ink */
+  --color-ink-100: #f4f2ff;
+  --color-ink-60: #a6a3c2;
+  --color-ink-30: #5a5775;
+
+  /* Accents */
+  --color-violet: #7c5bff;
+  --color-iris: #b07bff;
+  --color-cyan: #5be4ff;
+  --color-lime: #c7ff6e;
+  --color-rose: #ff6a8a;
+
+  /* Stroke */
+  --color-stroke: rgba(244, 242, 255, 0.08);
+  --color-stroke-strong: rgba(244, 242, 255, 0.16);
+
+  /* Fonts */
+  --font-display: "Clash Display", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Fluid type scale — calibrated so display headings fit one viewport
+     without forcing absurd wraps on common laptop widths (1280–1536). */
+  --fs-display: clamp(2.75rem, 6.4vw, 6rem);
+  --fs-h1: clamp(2rem, 4.2vw, 4rem);
+  --fs-h2: clamp(1.625rem, 3.2vw, 2.75rem);
+  --fs-h3: clamp(1.25rem, 2vw, 1.75rem);
+  --fs-h4: clamp(1.05rem, 1.4vw, 1.375rem);
+  --fs-body: clamp(0.95rem, 1.05vw, 1.05rem);
+  --fs-sm: 0.85rem;
+  --fs-xs: 0.72rem;
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 2rem;
+  --radius-pill: 999px;
+
+  /* Easings */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* ---------------------------------------------------------------
+   Globals
+   --------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  background-color: var(--color-void);
+  color: var(--color-ink-100);
+  min-height: 100%;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-violet);
+  color: var(--color-ink-100);
+}
+
+/* Display heading defaults — POSITIVE tracking + descender padding */
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: 0.012em;
+  padding-right: 0.04em;
+}
+
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.008em;
+}
+
+p {
+  color: var(--color-ink-60);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+/* ---------------------------------------------------------------
+   Brand gradient text — WebKit clip-fix bundled in
+   --------------------------------------------------------------- */
+.brand-gradient-text {
+  background: linear-gradient(135deg, #7c5bff 0%, #b07bff 50%, #5be4ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  padding-right: 0.08em;
+  overflow-wrap: anywhere;
+}
+
+/* SplitText/Manifesto children inherit transparent text-fill-color, so each
+   animated unit needs its own gradient background to render visibly. */
+.brand-gradient-text [data-split-unit],
+.brand-gradient-text [data-manifesto-word] {
+  background: linear-gradient(135deg, #7c5bff 0%, #b07bff 50%, #5be4ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.brand-gradient-surface {
+  background: linear-gradient(135deg, #7c5bff 0%, #b07bff 50%, #5be4ff 100%);
+}
+
+/* ---------------------------------------------------------------
+   Focus ring (every interactive primitive)
+   --------------------------------------------------------------- */
+:where(a, button, [role="button"], input, textarea, select, [tabindex]):focus {
+  outline: none;
+}
+
+:where(a, button, [role="button"], input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------
+   Skip link
+   --------------------------------------------------------------- */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-elev);
+  color: var(--color-ink-100);
+  border: 1px solid var(--color-stroke-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  transition: top 0.2s var(--ease-out-expo);
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+/* ---------------------------------------------------------------
+   Opt-in reduced motion — apply ONLY to elements that wear .respect-reduced-motion
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .respect-reduced-motion,
+  .respect-reduced-motion *,
+  .respect-reduced-motion *::before,
+  .respect-reduced-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Loader keyframes
+   --------------------------------------------------------------- */
+@keyframes auroraPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.96); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes auroraSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes auroraShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
