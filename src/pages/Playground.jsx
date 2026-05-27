@@ -34,7 +34,7 @@ export default function Playground() {
   useDocumentMeta({
     title: 'Playground',
     description:
-      'Live demos of motion primitives, scroll-driven interactions and design tokens powering varadpatil.vercel.app.',
+      'Live demos of motion primitives, scroll-driven interactions and design tokens powering varaddev.vercel.app.',
     path: '/playground',
   })
   const scrubRef = useRef(null)

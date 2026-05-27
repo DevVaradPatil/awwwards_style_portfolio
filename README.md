@@ -1,4 +1,4 @@
-# Varad Patil — Portfolio (`varadpatil.vercel.app`)
+# Varad Patil — Portfolio (`varaddev.vercel.app`)
 
 An Awwwards-grade personal portfolio for **Varad Patil** — full-stack developer & AI builder, M.Tech AI for Sustainability @ IIT Kanpur. Built around the **Aurora Compute** design system: deep-space surfaces with a violet → iris → cyan accent gradient, Clash Display + Inter + JetBrains Mono.
 

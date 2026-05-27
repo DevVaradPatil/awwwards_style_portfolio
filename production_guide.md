@@ -49,9 +49,9 @@ Edit these before first deploy:
 
 | File | What to change |
 |------|----------------|
-| `src/lib/useDocumentMeta.js` | `SITE.url` → your production origin (e.g. `https://varadpatil.vercel.app`) |
+| `src/lib/useDocumentMeta.js` | `SITE.url` → your production origin (e.g. `https://varaddev.vercel.app`) |
 | `index.html` | `<meta property="og:url">`, `<link rel="canonical">`, JSON-LD `sameAs` URLs |
-| `public/sitemap.xml` | Replace `https://varadpatil.vercel.app` with your domain |
+| `public/sitemap.xml` | Replace `https://varaddev.vercel.app` with your domain |
 | `public/robots.txt` | Update `Sitemap:` URL |
 | `src/data/socials.js` | Verify GitHub / LinkedIn / contact email |
 | `public/og-image.png` | Drop a real 1200×630 PNG (currently a placeholder) |
@@ -123,7 +123,7 @@ Add `404.html` that mirrors `index.html` so deep links work.
 ```nginx
 server {
   listen 80;
-  server_name varadpatil.vercel.app;
+  server_name varaddev.vercel.app;
   root /var/www/portfolio/dist;
   index index.html;
 

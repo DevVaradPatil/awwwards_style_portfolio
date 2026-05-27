@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 const SITE = {
   name: 'Varad Patil',
-  url: 'https://varadpatil.vercel.app',
+  url: 'https://varaddev.vercel.app',
   defaultTitle: 'Varad Patil — Developer · Designer · AI Builder',
   defaultDescription:
     'Varad Patil — Full-stack developer & AI enthusiast crafting fast, scalable, immersive web experiences. M.Tech AI for Sustainability, IIT Kanpur.',
