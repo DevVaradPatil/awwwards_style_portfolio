@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import PageTransition from '@/components/system/PageTransition.jsx'
 import RouteLoader from '@/components/system/RouteLoader.jsx'
+import ErrorBoundary from '@/components/system/ErrorBoundary.jsx'
 import Home from '@/pages/Home.jsx'
 
 const Work = lazy(() => import('@/pages/Work.jsx'))
@@ -15,17 +16,19 @@ export default function AppRouter() {
   const location = useLocation()
   return (
     <PageTransition>
-      <Suspense fallback={<RouteLoader />}>
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/work" element={<Work />} />
-          <Route path="/work/:slug" element={<CaseStudy />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/playground" element={<Playground />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<RouteLoader />}>
+          <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/work/:slug" element={<CaseStudy />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/playground" element={<Playground />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </PageTransition>
   )
 }

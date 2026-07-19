@@ -28,7 +28,11 @@ export default function FeaturedWork() {
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
           {featuredProjects.map((p, i) => (
             <Reveal key={p.slug} delay={i * 0.06}>
-              <Link to={`/work/${p.slug}`} aria-label={`Open case study: ${p.title}`}>
+              <Link
+                to={`/work/${p.slug}`}
+                aria-label={`Open case study: ${p.title}`}
+                className="group block h-full"
+              >
                 <TiltCard max={6} className="h-full">
                   <article className="flex h-full flex-col gap-5 p-5">
                     <div className="relative aspect-[16/10] overflow-hidden rounded-(--radius-md) bg-(--color-void)">
@@ -61,7 +65,7 @@ export default function FeaturedWork() {
                           {p.summary}
                         </p>
                       </div>
-                      <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) text-(--color-ink-100) transition-colors hover:border-(--color-cyan) hover:text-(--color-cyan)">
+                      <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) text-(--color-ink-100) transition-colors group-hover:border-(--color-cyan) group-hover:text-(--color-cyan)">
                         <ArrowUpRight size={16} strokeWidth={2} />
                       </span>
                     </div>
