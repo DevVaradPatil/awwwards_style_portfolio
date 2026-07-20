@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/fonts.css";
 
 /* ---------------------------------------------------------------
    Aurora Compute — Design Tokens
@@ -199,6 +200,67 @@ canvas {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Route enter transition (replaces Framer PageTransition on the eager path)
+   --------------------------------------------------------------- */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.55s var(--ease-out-expo) both;
+}
+
+/* Card/item entrance — used by filtered grids & the testimonial carousel
+   (replaces Framer's per-item enter animation). Stagger via inline
+   animation-delay; replay by re-keying the container. */
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-enter {
+  animation: cardEnter 0.45s var(--ease-out-expo) both;
+}
+
+/* Mobile nav drop-in (replaces Framer's AnimatePresence). Mounted only while
+   open, so this plays on open; close is an instant unmount. */
+@keyframes menuDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-drop {
+  animation: menuDrop 0.28s var(--ease-out-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .card-enter,
+  .menu-drop {
+    animation: none;
   }
 }
 

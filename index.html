@@ -26,20 +26,23 @@
     <link rel="canonical" href="https://varaddev.vercel.app/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Font hosts -->
-    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Self-hosted fonts (see scripts/fetch-fonts.mjs). Preload the two
+         above-the-fold faces; the rest load via @font-face in fonts.css. -->
+    <link
+      rel="preload"
+      href="/fonts/clash-display-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-400-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="dns-prefetch" href="https://api.emailjs.com" />
-
-    <link
-      rel="stylesheet"
-      href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    />
 
     <title>Varad Patil — Developer · Designer · AI Builder</title>
 

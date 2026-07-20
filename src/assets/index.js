@@ -37,13 +37,13 @@ import bento from './projects/bento.webp'
 import framerPortfolio from './projects/framerPortfolio.webp'
 import resumeinsight from './projects/resumeinsight.webp'
 
-import hero from './creator.jpeg'
+import hero from './creator.jpg'
 
 import quote from './quote.png'
 
-import aman from './aman.jpeg'
-import psakhre from './psakhre.jpeg'
-import pghatge from './pghatge.jpeg'
+import aman from './aman.jpg'
+import psakhre from './psakhre.jpg'
+import pghatge from './pghatge.jpg'
 
 import frontend from './services/frontend.svg'
 import backend from './services/backend.svg'

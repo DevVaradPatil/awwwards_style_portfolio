@@ -256,6 +256,8 @@ export default function Orb3D({ size = 380, className = '' }) {
     // -- Pointer parallax ---------------------------------------------------
     // Pointer position drives an additive tilt offset on top of the auto-spin.
     const onPointer = (e) => {
+      // Orb only reacts while on-screen; skip the layout read when scrolled away.
+      if (!visible) return
       const rect = wrap.getBoundingClientRect()
       const px = (e.clientX - rect.left) / rect.width - 0.5
       const py = (e.clientY - rect.top) / rect.height - 0.5

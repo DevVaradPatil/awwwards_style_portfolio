@@ -8,7 +8,7 @@ import Reveal from '@/components/primitives/Reveal.jsx'
 import MagneticButton from '@/components/primitives/MagneticButton.jsx'
 import { projects } from '@/data/projects.js'
 import NotFound from '@/pages/NotFound.jsx'
-import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import useDocumentMeta, { SITE } from '@/lib/useDocumentMeta.js'
 
 export default function CaseStudy() {
   const { slug } = useParams()
@@ -27,6 +27,19 @@ export default function CaseStudy() {
     title: project ? project.title : 'Case study',
     description: project ? project.summary : 'Project case study by Varad Patil.',
     path: `/work/${slug}`,
+    jsonLd: project
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: project.title,
+          description: project.summary,
+          url: `${SITE.url}/work/${slug}`,
+          ...(project.image ? { image: `${SITE.url}${project.image}` } : {}),
+          ...(project.year ? { dateCreated: String(project.year) } : {}),
+          ...(project.tags?.length ? { keywords: project.tags.join(', ') } : {}),
+          author: { '@type': 'Person', name: SITE.name, url: SITE.url },
+        }
+      : null,
   })
 
   if (!project) return <NotFound />

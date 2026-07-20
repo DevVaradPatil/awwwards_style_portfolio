@@ -1,25 +1,19 @@
-import { AnimatePresence, motion } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
-const variants = {
-  initial: { opacity: 0, y: 16 },
-  enter: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
-  exit: { opacity: 0, y: -12, transition: { duration: 0.3, ease: [0.77, 0, 0.175, 1] } },
-}
-
+/**
+ * PageTransition — per-route enter animation, CSS-only (no Framer Motion).
+ *
+ * Keying the wrapper by pathname remounts the subtree on navigation, which
+ * replays the `.page-enter` keyframe. Enter-only by design: exit animations
+ * race badly with Suspense fallbacks on lazy routes, and SmoothScrollProvider
+ * already snaps to top on navigation, so a clean fade-up in reads crisper than
+ * a wait-for-exit crossfade. Honors prefers-reduced-motion via the CSS class.
+ */
 export default function PageTransition({ children }) {
   const { pathname } = useLocation()
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        variants={variants}
-        initial="initial"
-        animate="enter"
-        exit="exit"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <div key={pathname} className="page-enter">
+      {children}
+    </div>
   )
 }

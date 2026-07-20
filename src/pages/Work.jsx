@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import Container from '@/components/system/Container.jsx'
 import GradientBlob from '@/components/primitives/GradientBlob.jsx'
@@ -8,16 +7,12 @@ import SplitText from '@/components/primitives/SplitText.jsx'
 import Reveal from '@/components/primitives/Reveal.jsx'
 import { projects, projectTags } from '@/data/projects.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 const FILTERS = ['All', ...projectTags]
 
 export default function Work() {
-  useDocumentMeta({
-    title: 'Selected Work',
-    description:
-      'A selection of full-stack, AI, 3D and mobile projects shipped by Varad Patil — from production SaaS to creative playgrounds.',
-    path: '/work',
-  })
+  useDocumentMeta(pageMeta.work)
   const [filter, setFilter] = useState('All')
 
   const visible = useMemo(() => {
@@ -85,29 +80,21 @@ export default function Work() {
       {/* GRID */}
       <section className="relative py-20 md:py-28">
         <Container>
-          <motion.div
-            layout
+          {/* Re-keying by filter replays the staggered entrance on each change. */}
+          <div
+            key={filter}
             className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
           >
-            <AnimatePresence mode="popLayout">
-              {visible.map((p, i) => (
-                <motion.div
-                  key={p.slug}
-                  layout
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -16 }}
-                  transition={{
-                    duration: 0.45,
-                    ease: [0.16, 1, 0.3, 1],
-                    delay: i * 0.03,
-                  }}
-                >
-                  <ProjectCard project={p} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+            {visible.map((p, i) => (
+              <div
+                key={p.slug}
+                className="card-enter"
+                style={{ animationDelay: `${i * 0.03}s` }}
+              >
+                <ProjectCard project={p} />
+              </div>
+            ))}
+          </div>
 
           {visible.length === 0 && (
             <Reveal className="py-20 text-center font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">

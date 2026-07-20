@@ -7,14 +7,10 @@ import ManifestoScrub from '@/sections/home/ManifestoScrub.jsx'
 import Stats from '@/sections/home/Stats.jsx'
 import CTAFooter from '@/sections/home/CTAFooter.jsx'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 export default function Home() {
-  useDocumentMeta({
-    title: null,
-    description:
-      'Varad Patil — Full-stack developer & AI enthusiast crafting fast, scalable, immersive web experiences. M.Tech AI for Sustainability, IIT Kanpur.',
-    path: '/',
-  })
+  useDocumentMeta(pageMeta.home)
   return (
     <>
       <Hero />

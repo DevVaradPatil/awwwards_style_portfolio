@@ -1,6 +1,6 @@
-import aman from '@/assets/aman.jpeg'
-import psakhre from '@/assets/psakhre.jpeg'
-import pghatge from '@/assets/pghatge.jpeg'
+import aman from '@/assets/aman.jpg'
+import psakhre from '@/assets/psakhre.jpg'
+import pghatge from '@/assets/pghatge.jpg'
 
 export const testimonials = [
   {

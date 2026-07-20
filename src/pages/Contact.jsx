@@ -8,16 +8,12 @@ import MagneticButton from '@/components/primitives/MagneticButton.jsx'
 import { contact, socials } from '@/data/socials.js'
 import { sendContactEmail, emailjsConfigured } from '@/lib/emailjs.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function Contact() {
-  useDocumentMeta({
-    title: 'Contact',
-    description:
-      'Have an idea worth shipping? Reach Varad Patil for full-stack, AI and product collaborations.',
-    path: '/contact',
-  })
+  useDocumentMeta(pageMeta.contact)
   return (
     <>
       <Hero />

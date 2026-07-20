@@ -20,14 +20,16 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return
-          if (id.includes('react-dom') || id.includes('/react/') || id.includes('scheduler')) {
+          // Normalise Windows backslashes so the slash-delimited matchers below
+          // (e.g. /react/, /motion/) work identically on every platform.
+          const p = id.replace(/\\/g, '/')
+          if (p.includes('react-dom') || p.includes('/react/') || p.includes('scheduler')) {
             return 'vendor-react'
           }
-          if (id.includes('react-router')) return 'vendor-router'
-          if (id.includes('gsap')) return 'vendor-gsap'
-          if (id.includes('framer-motion') || id.includes('/motion/')) return 'vendor-motion'
-          if (id.includes('lenis')) return 'vendor-lenis'
-          if (id.includes('lucide-react')) return 'vendor-icons'
+          if (p.includes('react-router')) return 'vendor-router'
+          if (p.includes('gsap')) return 'vendor-gsap'
+          if (p.includes('lenis')) return 'vendor-lenis'
+          if (p.includes('lucide-react')) return 'vendor-icons'
         },
       },
     },

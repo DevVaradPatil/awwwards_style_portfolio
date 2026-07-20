@@ -1,13 +1,5 @@
 import { useEffect } from 'react'
-
-const SITE = {
-  name: 'Varad Patil',
-  url: 'https://varaddev.vercel.app',
-  defaultTitle: 'Varad Patil — Developer · Designer · AI Builder',
-  defaultDescription:
-    'Varad Patil — Full-stack developer & AI enthusiast crafting fast, scalable, immersive web experiences. M.Tech AI for Sustainability, IIT Kanpur.',
-  ogImage: '/og-image.png',
-}
+import { SITE } from '@/data/siteMeta.js'
 
 function setMeta(name, content, attr = 'name') {
   if (!content) return
@@ -30,11 +22,15 @@ function setCanonical(href) {
   el.setAttribute('href', href)
 }
 
+const JSONLD_ID = 'page-jsonld'
+
 /**
  * useDocumentMeta — Per-route SEO meta synchronization.
  * Pass { title, description, path } and it patches <title>, OG/Twitter, canonical.
+ * Optionally pass { jsonLd } (a schema.org object) to inject a page-scoped
+ * JSON-LD <script>; it is removed on unmount so it can't leak to the next route.
  */
-export default function useDocumentMeta({ title, description, path } = {}) {
+export default function useDocumentMeta({ title, description, path, jsonLd } = {}) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${SITE.name}` : SITE.defaultTitle
     const desc = description || SITE.defaultDescription
@@ -59,6 +55,28 @@ export default function useDocumentMeta({ title, description, path } = {}) {
 
     setCanonical(url)
   }, [title, description, path])
+
+  // Page-scoped JSON-LD. Keyed on the serialized value so it only re-runs when
+  // the content actually changes, not on every render.
+  const serialized = jsonLd ? JSON.stringify(jsonLd) : null
+  useEffect(() => {
+    const existing = document.getElementById(JSONLD_ID)
+    if (!serialized) {
+      if (existing) existing.remove()
+      return
+    }
+    let el = existing
+    if (!el) {
+      el = document.createElement('script')
+      el.type = 'application/ld+json'
+      el.id = JSONLD_ID
+      document.head.appendChild(el)
+    }
+    el.textContent = serialized
+    return () => {
+      document.getElementById(JSONLD_ID)?.remove()
+    }
+  }, [serialized])
 }
 
 export { SITE }

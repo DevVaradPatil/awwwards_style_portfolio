@@ -197,7 +197,35 @@ The bones are genuinely good (custom cursor, magnetic buttons, orb, scrub sectio
 - **About page**: add a real photo-forward moment and a "what I'm doing now" section — juries and clients both read About second.
 - Resume: `/resume.pdf` in `public/` + a "Résumé ↓" link in header/footer.
 
-### 5.4 Awwwards submission hygiene
+### 5.4 New content: Android apps & AI/ML research ★ (requested addition)
+
+The site claims "Mobile" as a skill (services icon, `principles`, the `Mobile` filter tag) but ships **zero mobile projects** — while two real apps are live on the Play Store under Vertex Studios. That's the strongest untold story on the site. Fix:
+
+**a) Add both Play Store apps as first-class projects in `src/data/projects.js`:**
+
+- **Wordigo — Daily Word Puzzle** (`com.vertexstudios.wordigo`) — word-puzzle game.
+  `https://play.google.com/store/apps/details?id=com.vertexstudios.wordigo`
+- **365: Life Calendar in Dots** (`com.vertexstudios.project_365`) — life-calendar / habit-visualization app.
+  `https://play.google.com/store/apps/details?id=com.vertexstudios.project_365`
+
+Implementation notes:
+- Tag both `Mobile` (the filter tag already exists and is currently starved of content); Wordigo could also carry a `Game` angle in copy.
+- **Extend the project `links` schema** with a `playstore` field (`{ live, repo, playstore }`) and render a proper "Get it on Google Play" action on the case-study page instead of the generic "LIVE SITE" label. A small Play-Store badge/icon on cards signals shipped-to-production credibility.
+- **Assets needed from you:** app icons + 3–5 phone screenshots each (or better: device-frame mockups, dark background to match Aurora). Export as ~400–500 px wide webp — phone screenshots are tall, so consider a horizontal scroll strip or a 2–3 column phone-frame grid inside the case study; the 16/10 card image can be a composed banner (icon + framed screenshot on gradient).
+- Case-study content per app: problem → design decisions → tech (Kotlin? Flutter? — state it), store metrics when shareable (downloads, rating), and what you learned shipping to the Play Store (release process, reviews, updates).
+- Consider featuring one of them (`featured: true`) so mobile work is visible on the home page.
+- The Phase 3 build-time sitemap picks the two new `/work/<slug>` URLs up automatically; JSON-LD for these should use `@type: SoftwareApplication` / `MobileApplication` with `operatingSystem: Android` and the store URL — great rich-result material.
+
+**b) Surface the AI/ML research identity (M.Tech @ IIT Kanpur):**
+
+Research site: **`https://varadiitk.vercel.app/`** — currently linked nowhere on the portfolio.
+
+- Add a `research` entry to `socials` in `src/data/socials.js` (label "Research · IITK") → it then appears on the Contact "Find me on" list automatically.
+- Add it to the JSON-LD `sameAs` array in `index.html`.
+- Add a visible pointer in the Footer and on the About page — e.g. a small "Currently: M.Tech AI research @ IIT Kanpur →" card linking out. The AI positioning ("AI Builder") is much more credible with the research work one click away.
+- Optional stretch: a dedicated "Research" section/route summarizing the M.Tech work with an outbound link — good SEO surface for AI-related queries and a differentiator few dev portfolios have.
+
+### 5.5 Awwwards submission hygiene
 
 - Every judged category matters: Design, Usability, Creativity, Content. The wipe transition + cursor labels + preloader cover Creativity; Phases 2–4 cover Usability; case-study depth covers Content.
 - Test the whole flow at 1280×800 and on a mid-tier Android phone — judges do.
@@ -221,7 +249,7 @@ The bones are genuinely good (custom cursor, magnetic buttons, orb, scrub sectio
 | 2 | Images, self-hosted fonts, drop eager Framer, runtime fixes | 1–2 days | 🔴 Huge (perf) |
 | 3 | Prerender routes, generated sitemap, JSON-LD, OG per page | 1–2 days | 🔴 Huge (SEO/sharing) |
 | 4 | Focus trap, scroll restoration, reduced-motion, audits | ~1 day | 🟡 High |
-| 5 | Preloader, transitions v2, cursor labels, case-study depth, videos | 1–2 weeks, iterative | 🟣 The "wow" |
+| 5 | Preloader, transitions v2, cursor labels, case-study depth, videos, **Android apps + research link** | 1–2 weeks, iterative | 🟣 The "wow" |
 | 6 | Analytics, perf budgets, Lighthouse CI | ~½ day, ongoing | 🟢 Guardrail |
 
 Phases 1–3 are sequential and unblock everything (a portfolio that 404s on shared links can't win anything). Phase 5 items are independent — ship them one at a time behind small PRs and re-measure perf after each so the wow never costs the speed.

@@ -13,6 +13,7 @@ import { featuredProjects } from '@/data/projects.js'
 import { skillCloud } from '@/data/skills.js'
 import { stats } from '@/data/socials.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 function Lab({ id, title, kicker, children }) {
   return (
@@ -31,12 +32,7 @@ function Lab({ id, title, kicker, children }) {
 }
 
 export default function Playground() {
-  useDocumentMeta({
-    title: 'Playground',
-    description:
-      'Live demos of motion primitives, scroll-driven interactions and design tokens powering varaddev.vercel.app.',
-    path: '/playground',
-  })
+  useDocumentMeta(pageMeta.playground)
   const scrubRef = useRef(null)
 
   useEffect(() => {

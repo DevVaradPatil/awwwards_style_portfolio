@@ -1,5 +1,4 @@
 ﻿import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,21 +15,17 @@ import GradientBlob from '@/components/primitives/GradientBlob.jsx'
 import SplitText from '@/components/primitives/SplitText.jsx'
 import Reveal from '@/components/primitives/Reveal.jsx'
 import MagneticButton from '@/components/primitives/MagneticButton.jsx'
-import creator from '@/assets/creator.jpeg'
+import creator from '@/assets/creator.jpg'
 import { principles, contact, socials } from '@/data/socials.js'
 import { skillGroups } from '@/data/skills.js'
 import { experience } from '@/data/experience.js'
 import { education } from '@/data/education.js'
 import { testimonials } from '@/data/testimonials.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 export default function About() {
-  useDocumentMeta({
-    title: 'About',
-    description:
-      'M.Tech researcher at IIT Kanpur, full-stack developer, AI builder. Principles, timeline, stack, education and recommendations.',
-    path: '/about',
-  })
+  useDocumentMeta(pageMeta.about)
   return (
     <>
       <Hero />
@@ -426,39 +421,31 @@ function TestimonialsCarousel() {
             className="absolute -top-4 left-0 text-(--color-ink-30)/30"
             strokeWidth={1.2}
           />
-          <AnimatePresence mode="wait">
-            <motion.figure
-              key={t.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="relative max-w-4xl pt-10 pl-16"
-            >
-              <blockquote className="font-display text-(length:--fs-h2) leading-[1.2] text-(--color-ink-100)">
-                &ldquo;{t.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-8 flex items-center gap-4">
-                <img
-                  src={t.photo}
-                  alt={t.name}
-                  width={56}
-                  height={56}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-14 w-14 rounded-full border border-(--color-stroke-strong) object-cover"
-                />
-                <div>
-                  <p className="font-display text-(length:--fs-h4) text-(--color-ink-100)">
-                    {t.name}
-                  </p>
-                  <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60)">
-                    {t.role}
-                  </p>
-                </div>
-              </figcaption>
-            </motion.figure>
-          </AnimatePresence>
+          {/* Re-keying by testimonial id replays the fade-in on each change. */}
+          <figure key={t.id} className="card-enter relative max-w-4xl pt-10 pl-16">
+            <blockquote className="font-display text-(length:--fs-h2) leading-[1.2] text-(--color-ink-100)">
+              &ldquo;{t.quote}&rdquo;
+            </blockquote>
+            <figcaption className="mt-8 flex items-center gap-4">
+              <img
+                src={t.photo}
+                alt={t.name}
+                width={56}
+                height={56}
+                loading="lazy"
+                decoding="async"
+                className="h-14 w-14 rounded-full border border-(--color-stroke-strong) object-cover"
+              />
+              <div>
+                <p className="font-display text-(length:--fs-h4) text-(--color-ink-100)">
+                  {t.name}
+                </p>
+                <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60)">
+                  {t.role}
+                </p>
+              </div>
+            </figcaption>
+          </figure>
         </div>
 
         <div className="mt-10 flex items-center gap-4">

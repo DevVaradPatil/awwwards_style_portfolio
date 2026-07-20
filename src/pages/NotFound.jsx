@@ -5,6 +5,7 @@ import SplitText from '@/components/primitives/SplitText.jsx'
 import MagneticButton from '@/components/primitives/MagneticButton.jsx'
 import Marquee from '@/components/primitives/Marquee.jsx'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 const lostWords = [
   '404',
@@ -16,11 +17,7 @@ const lostWords = [
 ]
 
 export default function NotFound() {
-  useDocumentMeta({
-    title: '404',
-    description: 'Page not found.',
-    path: '/404',
-  })
+  useDocumentMeta(pageMeta.notFound)
   return (
     <>
       <section className="relative flex min-h-[80svh] items-center overflow-hidden pt-32 pb-20">

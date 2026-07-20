@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
 const links = [
@@ -88,48 +87,42 @@ export default function Header() {
         </button>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.nav
-            id="mobile-nav"
-            aria-label="Mobile"
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="border-t border-(--color-stroke) bg-(--color-void)/95 backdrop-blur-xl md:hidden"
-          >
-            <ul className="mx-auto flex w-full max-w-[1400px] flex-col gap-1 px-6 py-6">
-              {links.map((l) => (
-                <li key={l.to}>
-                  <NavLink
-                    to={l.to}
-                    onClick={close}
-                    className={({ isActive }) =>
-                      `block rounded-(--radius-md) px-4 py-4 font-display text-(length:--fs-h3) transition-colors ${
-                        isActive
-                          ? 'text-(--color-ink-100)'
-                          : 'text-(--color-ink-60) hover:text-(--color-ink-100)'
-                      }`
-                    }
-                  >
-                    {l.label}
-                  </NavLink>
-                </li>
-              ))}
-              <li className="mt-3 border-t border-(--color-stroke) pt-5">
-                <Link
-                  to="/contact"
-                  onClick={close}
-                  className="block rounded-(--radius-md) bg-(--color-ink-100) px-4 py-4 text-center font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-void)"
-                >
-                  Let&apos;s talk
-                </Link>
-              </li>
-            </ul>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+      {open && (
+        <nav
+          id="mobile-nav"
+          aria-label="Mobile"
+          className="menu-drop absolute inset-x-0 top-full origin-top border-t border-(--color-stroke) bg-(--color-void)/95 backdrop-blur-xl md:hidden"
+        >
+          <ul className="mx-auto flex w-full max-w-[1400px] flex-col gap-1 px-6 py-6">
+          {links.map((l) => (
+            <li key={l.to}>
+              <NavLink
+                to={l.to}
+                onClick={close}
+                className={({ isActive }) =>
+                  `block rounded-(--radius-md) px-4 py-4 font-display text-(length:--fs-h3) transition-colors ${
+                    isActive
+                      ? 'text-(--color-ink-100)'
+                      : 'text-(--color-ink-60) hover:text-(--color-ink-100)'
+                  }`
+                }
+              >
+                {l.label}
+              </NavLink>
+            </li>
+          ))}
+          <li className="mt-3 border-t border-(--color-stroke) pt-5">
+            <Link
+              to="/contact"
+              onClick={close}
+              className="block rounded-(--radius-md) bg-(--color-ink-100) px-4 py-4 text-center font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-void)"
+            >
+              Let&apos;s talk
+            </Link>
+          </li>
+          </ul>
+        </nav>
+      )}
     </header>
   )
 }

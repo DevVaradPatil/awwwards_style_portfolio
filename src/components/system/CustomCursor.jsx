@@ -36,12 +36,24 @@ export default function CustomCursor() {
       my = e.clientY
       // dot snaps instantly
       dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`
+      // wake the easing loop if it went idle
+      if (!raf) raf = requestAnimationFrame(tick)
     }
 
     const tick = () => {
+      const dx = mx - rx
+      const dy = my - ry
+      // Converged and pointer isn't moving — park the loop until the next move.
+      if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        rx = mx
+        ry = my
+        ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
+        raf = 0
+        return
+      }
       // ring eases toward pointer
-      rx += (mx - rx) * 0.18
-      ry += (my - ry) * 0.18
+      rx += dx * 0.18
+      ry += dy * 0.18
       ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
       raf = requestAnimationFrame(tick)
     }
