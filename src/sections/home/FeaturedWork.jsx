@@ -31,6 +31,7 @@ export default function FeaturedWork() {
               <Link
                 to={`/work/${p.slug}`}
                 aria-label={`Open case study: ${p.title}`}
+                data-cursor-label="View"
                 className="group block h-full"
               >
                 <TiltCard max={6} className="h-full">

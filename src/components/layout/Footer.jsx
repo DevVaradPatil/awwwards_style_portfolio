@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight } from 'lucide-react'
-import { contact, socials } from '@/data/socials.js'
+import { ArrowUpRight, FlaskConical } from 'lucide-react'
+import { contact, socials, research } from '@/data/socials.js'
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -9,6 +10,31 @@ const navLinks = [
   { to: '/playground', label: 'Playground' },
   { to: '/contact', label: 'Contact' },
 ]
+
+// Live local time (Varad is based at IIT Kanpur → IST).
+function LocalTime() {
+  const [now, setNow] = useState('')
+  useEffect(() => {
+    const tick = () =>
+      setNow(
+        new Intl.DateTimeFormat('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Kolkata',
+        }).format(new Date()),
+      )
+    tick()
+    const id = setInterval(tick, 15000)
+    return () => clearInterval(id)
+  }, [])
+  if (!now) return null
+  return (
+    <span className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
+      Kanpur, IN · {now} IST
+    </span>
+  )
+}
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -36,6 +62,31 @@ export default function Footer() {
             >
               {contact.email}
               <ArrowUpRight size={14} strokeWidth={2} />
+            </a>
+
+            {/* Research callout */}
+            <a
+              href={research.href}
+              target="_blank"
+              rel="noreferrer"
+              className="group mt-8 flex max-w-md items-center gap-4 rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) p-4 transition-colors hover:border-(--color-cyan)/40"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) text-(--color-cyan)">
+                <FlaskConical size={16} strokeWidth={1.8} />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-30)">
+                  {research.org}
+                </span>
+                <span className="mt-1 flex items-center gap-1.5 font-display text-(length:--fs-h4) text-(--color-ink-100)">
+                  {research.label}
+                  <ArrowUpRight
+                    size={16}
+                    strokeWidth={2}
+                    className="text-(--color-ink-60) transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-(--color-cyan)"
+                  />
+                </span>
+              </span>
             </a>
           </div>
 
@@ -85,9 +136,7 @@ export default function Footer() {
           <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-60)">
             © {year} Varad Patil · All rights reserved
           </p>
-          <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-            Aurora Compute · v0.1 · Crafted with React, GSAP &amp; Lenis
-          </p>
+          <LocalTime />
         </div>
       </div>
     </footer>

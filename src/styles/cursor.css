@@ -58,3 +58,36 @@
 .aurora-cursor--dot.is-hidden {
   opacity: 0;
 }
+
+/* Context label — a pill that trails the cursor over elements carrying
+   data-cursor-label (e.g. project cards). Not blended, so it stays legible. */
+.aurora-cursor--label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  pointer-events: none;
+  margin-top: 22px;
+  margin-left: 22px;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-cyan);
+  color: var(--color-void);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  opacity: 0;
+  transform-origin: top left;
+  scale: 0.7;
+  transition:
+    opacity 0.2s linear,
+    scale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.aurora-cursor--label.is-visible {
+  opacity: 1;
+  scale: 1;
+}

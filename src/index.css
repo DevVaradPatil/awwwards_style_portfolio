@@ -79,6 +79,9 @@ body {
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   line-height: 1.55;
+  /* Contain off-edge decorative bleed (GradientBlobs) so mobile can't be
+     side-panned. Kept on BODY only — putting overflow on <html> breaks
+     GSAP ScrollTrigger's scroller detection (scroll-reveal stops firing). */
   overflow-x: hidden;
 }
 
@@ -217,8 +220,15 @@ canvas {
   }
 }
 
+/* fill-mode MUST stay `backwards`, never `both`.
+   `both` retains the final keyframe forever, leaving transform: translateY(0)
+   on this wrapper. Any transform (even a zero one) creates a containing block
+   for position:fixed descendants — which silently breaks GSAP ScrollTrigger's
+   pin (it pins via position:fixed). That threw the pinned Manifesto section
+   off-screen and left ~180vh of blank scroll. `backwards` gives the identical
+   visual but drops all animated styles once the animation ends. */
 .page-enter {
-  animation: pageEnter 0.55s var(--ease-out-expo) both;
+  animation: pageEnter 0.55s var(--ease-out-expo) backwards;
 }
 
 /* Card/item entrance — used by filtered grids & the testimonial carousel
@@ -235,8 +245,9 @@ canvas {
   }
 }
 
+/* `backwards`, not `both` — see the note on .page-enter above. */
 .card-enter {
-  animation: cardEnter 0.45s var(--ease-out-expo) both;
+  animation: cardEnter 0.45s var(--ease-out-expo) backwards;
 }
 
 /* Mobile nav drop-in (replaces Framer's AnimatePresence). Mounted only while
@@ -252,16 +263,33 @@ canvas {
   }
 }
 
+/* `backwards`, not `both` — see the note on .page-enter above. */
 .menu-drop {
-  animation: menuDrop 0.28s var(--ease-out-expo) both;
+  animation: menuDrop 0.28s var(--ease-out-expo) backwards;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .page-enter,
-  .card-enter,
-  .menu-drop {
-    animation: none;
-  }
+/* ---------------------------------------------------------------
+   Reveal — scroll entrance for <Reveal> (components/primitives/Reveal.jsx).
+
+   The hidden state is applied by JS in useLayoutEffect (before first paint),
+   NOT by a static CSS rule. That ordering matters: it means content can never
+   paint visible and then blink out, and if JS never runs the content simply
+   stays visible instead of being stuck permanently blank.
+   --------------------------------------------------------------- */
+[data-reveal] {
+  transition:
+    opacity var(--reveal-duration, 1.1s) var(--ease-out-expo) var(--reveal-delay, 0s),
+    transform var(--reveal-duration, 1.1s) var(--ease-out-expo) var(--reveal-delay, 0s);
+}
+
+[data-reveal="out"] {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 20px));
+}
+
+[data-reveal="in"] {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ---------------------------------------------------------------

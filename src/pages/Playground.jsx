@@ -77,7 +77,7 @@ export default function Playground() {
       {/* SplitText */}
       <Lab id="split" kicker="01 · SplitText" title="Text reveal — by char & word">
         <div className="space-y-6">
-          <div className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-10">
+          <div className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-6 sm:p-10">
             <SplitText
               as="h3"
               by="char"
@@ -87,7 +87,7 @@ export default function Playground() {
               Code. Design. Create.
             </SplitText>
           </div>
-          <div className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-10">
+          <div className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-6 sm:p-10">
             <SplitText
               as="h3"
               by="word"

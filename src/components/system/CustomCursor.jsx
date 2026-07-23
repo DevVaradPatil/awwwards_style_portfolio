@@ -14,6 +14,7 @@ import '@/styles/cursor.css'
 export default function CustomCursor() {
   const dotRef = useRef(null)
   const ringRef = useRef(null)
+  const labelRef = useRef(null)
 
   useLayoutEffect(() => {
     const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
@@ -23,6 +24,7 @@ export default function CustomCursor() {
 
     const dot = dotRef.current
     const ring = ringRef.current
+    const label = labelRef.current
     if (!dot || !ring) return
 
     let mx = window.innerWidth / 2
@@ -36,6 +38,8 @@ export default function CustomCursor() {
       my = e.clientY
       // dot snaps instantly
       dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`
+      // re-derive hover state so it can never get stuck
+      applyHoverState(e.target)
       // wake the easing loop if it went idle
       if (!raf) raf = requestAnimationFrame(tick)
     }
@@ -48,6 +52,7 @@ export default function CustomCursor() {
         rx = mx
         ry = my
         ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
+        if (label) label.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
         raf = 0
         return
       }
@@ -55,6 +60,7 @@ export default function CustomCursor() {
       rx += dx * 0.18
       ry += dy * 0.18
       ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
+      if (label) label.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
       raf = requestAnimationFrame(tick)
     }
 
@@ -65,26 +71,52 @@ export default function CustomCursor() {
     const onLeaveWindow = () => {
       dot.classList.add('is-hidden')
       ring.classList.add('is-hidden')
+      clearHoverState()
     }
 
-    // Delegate hover state for any interactive element
+    // Hover state is DERIVED from whatever is under the pointer right now,
+    // instead of being toggled on/off by pointerover/pointerout. Clicking a
+    // project navigates and unmounts the card, so pointerout never fires for
+    // it — which left the "View" label (and the expanded ring) stuck to the
+    // cursor. Deriving the state makes it self-correcting.
     const HOVER_SEL = 'a, button, [role="button"], input, textarea, select, [data-cursor="link"]'
-    const onOver = (e) => {
-      if (e.target instanceof Element && e.target.closest(HOVER_SEL)) {
-        ring.classList.add('is-link')
-        dot.classList.add('is-link')
+
+    const clearHoverState = () => {
+      ring.classList.remove('is-link')
+      dot.classList.remove('is-link')
+      if (label) label.classList.remove('is-visible')
+    }
+
+    const applyHoverState = (target) => {
+      const el = target instanceof Element ? target : null
+      // isConnected guards against a target that has since left the DOM.
+      if (!el || !el.isConnected) {
+        clearHoverState()
+        return
+      }
+
+      const isLink = !!el.closest(HOVER_SEL)
+      ring.classList.toggle('is-link', isLink)
+      dot.classList.toggle('is-link', isLink)
+
+      if (!label) return
+      const labelled = el.closest('[data-cursor-label]')
+      if (labelled) {
+        const text = labelled.getAttribute('data-cursor-label') || ''
+        if (label.textContent !== text) label.textContent = text
+        label.classList.add('is-visible')
+      } else {
+        label.classList.remove('is-visible')
       }
     }
-    const onOut = (e) => {
-      if (e.target instanceof Element && e.target.closest(HOVER_SEL)) {
-        ring.classList.remove('is-link')
-        dot.classList.remove('is-link')
-      }
-    }
+
+    const onOver = (e) => applyHoverState(e.target)
 
     window.addEventListener('pointermove', onMove, { passive: true })
     window.addEventListener('pointerover', onOver, { passive: true })
-    window.addEventListener('pointerout', onOut, { passive: true })
+    // Clicking a card navigates away; drop the label immediately rather than
+    // waiting for the next pointermove on the new page.
+    window.addEventListener('click', clearHoverState, { passive: true, capture: true })
     document.addEventListener('mouseenter', onEnterWindow)
     document.addEventListener('mouseleave', onLeaveWindow)
 
@@ -94,7 +126,7 @@ export default function CustomCursor() {
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerover', onOver)
-      window.removeEventListener('pointerout', onOut)
+      window.removeEventListener('click', clearHoverState, { capture: true })
       document.removeEventListener('mouseenter', onEnterWindow)
       document.removeEventListener('mouseleave', onLeaveWindow)
       document.body.classList.remove('cursor-active')
@@ -105,6 +137,7 @@ export default function CustomCursor() {
     <>
       <div ref={ringRef} className="aurora-cursor aurora-cursor--ring" aria-hidden="true" />
       <div ref={dotRef} className="aurora-cursor aurora-cursor--dot" aria-hidden="true" />
+      <div ref={labelRef} className="aurora-cursor--label" aria-hidden="true" />
     </>
   )
 }

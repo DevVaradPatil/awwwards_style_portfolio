@@ -19,10 +19,12 @@ export default function ManifestoScrub() {
     const words = track.querySelectorAll('[data-manifesto-word]')
     if (!words.length) return
 
-    // Start words dim, animate to full opacity across pinned scroll range.
-    gsap.set(words, { opacity: 0.12 })
-
-    const ctx = gsap.context(() => {
+    // Pin + scrub only on desktop. Pinning fights mobile native scroll (Lenis
+    // is off there) and the address-bar resize, so on mobile the words simply
+    // render at full opacity (no pin).
+    const mm = gsap.matchMedia()
+    mm.add('(min-width: 768px)', () => {
+      gsap.set(words, { opacity: 0.12 })
       gsap.to(words, {
         opacity: 1,
         ease: 'none',
@@ -36,9 +38,9 @@ export default function ManifestoScrub() {
           invalidateOnRefresh: true,
         },
       })
-    }, section)
+    })
 
-    return () => ctx.revert()
+    return () => mm.revert()
   }, [])
 
   return (

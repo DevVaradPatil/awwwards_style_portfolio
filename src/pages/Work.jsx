@@ -112,6 +112,7 @@ function ProjectCard({ project }) {
     <Link
       to={`/work/${project.slug}`}
       aria-label={`Open case study: ${project.title}`}
+      data-cursor-label="View"
       className="group block h-full overflow-hidden rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) transition-colors hover:border-(--color-stroke-strong)"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-(--color-void)">

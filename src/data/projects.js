@@ -9,6 +9,21 @@ import island from '@/assets/projects/island.webp'
 import framerPortfolio from '@/assets/projects/framerPortfolio.webp'
 import codesnap from '@/assets/projects/codesnap.webp'
 import zelda from '@/assets/projects/zelda.webp'
+import app365Logo from '@/assets/apps/365/logo.png'
+import wordigoLogo from '@/assets/apps/wordigo/logo.png'
+
+// Play Store screenshots — globbed and numerically sorted (1.webp, 2.webp, …).
+const sortedShots = (glob) =>
+  Object.entries(glob)
+    .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+    .map(([, url]) => url)
+
+const app365Shots = sortedShots(
+  import.meta.glob('../assets/apps/365/*.webp', { eager: true, import: 'default' }),
+)
+const wordigoShots = sortedShots(
+  import.meta.glob('../assets/apps/wordigo/*.webp', { eager: true, import: 'default' }),
+)
 
 export const projectTags = ['Web', 'AI', '3D', 'Mobile', 'Open Source', 'Freelance']
 
@@ -31,6 +46,72 @@ export const projects = [
     stack: ['Next.js', 'Gemini API', 'AI/NLP'],
     image: resumeinsight,
     links: { live: 'https://resumeinsight.vercel.app/', repo: null },
+    featured: true,
+  },
+  {
+    slug: '365-life-calendar',
+    title: '365 — Life Calendar in Dots',
+    year: 2026,
+    tags: ['Mobile'],
+    type: 'app',
+    summary:
+      'A beautifully minimal life calendar — your time as a grid of dots that fills in as days pass, with Year, Life and Goal views, home-screen widgets and a live wallpaper.',
+    description:
+      '365. turns your time into a clean grid of dots — one for each day — that quietly fills in as the year passes. Three views (Year, Life, Goal) reframe how much time has gone and how much remains, backed by resizable widgets, a dot-calendar live wallpaper, gentle reflection logging, and private-by-default data.',
+    problem:
+      'The passing of time is abstract — most people only feel the weight of it at New Year, then lose that perspective for the rest of the year.',
+    approach:
+      'Rendered time as a dot grid across three modes (Year / Life / Goal), then pushed it onto the home screen with resizable widgets and a live wallpaper that redraws at midnight — so the perspective is always ambient, not something you have to open an app for.',
+    features: [
+      'Year, Life & Goal dot grids',
+      'Resizable home-screen widgets',
+      'Dot-calendar live wallpaper',
+      'Milestones & event rings',
+      'Gentle daily reflection & streaks',
+      'Private by default, optional Drive backup',
+    ],
+    impact: 'Live on Google Play — an ambient, memento-mori life calendar.',
+    stack: ['Flutter', 'Dart', 'Home Widgets', 'Live Wallpaper'],
+    image: app365Shots[0],
+    logo: app365Logo,
+    screenshots: app365Shots,
+    links: {
+      playstore:
+        'https://play.google.com/store/apps/details?id=com.vertexstudios.project_365',
+    },
+    featured: true,
+  },
+  {
+    slug: 'wordigo',
+    title: 'Wordigo — Daily Word Puzzle',
+    year: 2026,
+    tags: ['Mobile'],
+    type: 'app',
+    summary:
+      'A free, ad-free daily word game — a shared Daily puzzle, a 100+ level career mode and a pressure-free Zen mode, with streaks, gems and unlockable themes.',
+    description:
+      'Wordigo is a free word puzzle game for daily players: guess the word in six tries, keep a daily streak alive, and progress through 100+ hand-crafted career levels — or unwind in an endless Zen mode. Fully offline, with no paywalls and no ads.',
+    problem:
+      'Most word games gate the fun behind ads, subscriptions and paywalls, and ship a single mode that gets stale fast.',
+    approach:
+      'Built three distinct modes (Daily, Career, Zen) on a shared engine, with an offline-first store for streaks, gems, achievements and unlockable skins — so the whole game stays free and playable without a connection.',
+    features: [
+      'Shared Daily puzzle',
+      '100+ career levels',
+      'Endless Zen mode',
+      'Streaks & emergency hints',
+      'Gems, skins & themes',
+      'Fully offline + auto-save',
+    ],
+    impact: 'Live on Google Play — a complete, genuinely ad-free daily word game.',
+    stack: ['Flutter', 'Dart'],
+    image: wordigoShots[0],
+    logo: wordigoLogo,
+    screenshots: wordigoShots,
+    links: {
+      playstore:
+        'https://play.google.com/store/apps/details?id=com.vertexstudios.wordigo',
+    },
     featured: true,
   },
   {

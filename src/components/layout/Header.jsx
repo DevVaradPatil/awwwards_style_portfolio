@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
@@ -12,6 +12,9 @@ const links = [
 export default function Header() {
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
+  const navRef = useRef(null)
+  const triggerRef = useRef(null)
+  const wasOpen = useRef(false)
 
   // Lock scroll when open
   useEffect(() => {
@@ -23,14 +26,41 @@ export default function Header() {
     }
   }, [open])
 
-  // Close on Escape
+  // Focus management: trap Tab within the open menu, close on Escape, and
+  // return focus to the trigger when it closes.
   useEffect(() => {
-    if (!open) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false)
+    if (!open) {
+      if (wasOpen.current) {
+        wasOpen.current = false
+        triggerRef.current?.focus()
+      }
+      return
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    wasOpen.current = true
+    const focusables = () =>
+      [...(navRef.current?.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])') || [])]
+    focusables()[0]?.focus()
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        return
+      }
+      if (e.key !== 'Tab') return
+      const f = focusables()
+      if (!f.length) return
+      const first = f[0]
+      const last = f[f.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
   }, [open])
 
   return (
@@ -76,6 +106,7 @@ export default function Header() {
 
         {/* Mobile menu trigger */}
         <button
+          ref={triggerRef}
           type="button"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -89,6 +120,7 @@ export default function Header() {
 
       {open && (
         <nav
+          ref={navRef}
           id="mobile-nav"
           aria-label="Mobile"
           className="menu-drop absolute inset-x-0 top-full origin-top border-t border-(--color-stroke) bg-(--color-void)/95 backdrop-blur-xl md:hidden"

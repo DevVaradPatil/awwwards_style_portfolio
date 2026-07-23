@@ -6,6 +6,14 @@ export const contact = {
   portfolio: 'https://varadportfolio.web.app/',
 }
 
+// AI/ML research work (M.Tech @ IIT Kanpur) — surfaced prominently in the
+// Footer and listed alongside socials.
+export const research = {
+  label: 'AI / ML Research',
+  org: 'M.Tech · IIT Kanpur',
+  href: 'https://varadiitk.vercel.app/',
+}
+
 export const socials = [
   { id: 'github', label: 'GitHub', href: 'https://github.com/devVaradPatil/' },
   {
@@ -13,6 +21,7 @@ export const socials = [
     label: 'LinkedIn',
     href: 'https://www.linkedin.com/in/varad-patil-web-dev/',
   },
+  { id: 'research', label: 'Research · IITK', href: research.href },
   { id: 'codepen', label: 'CodePen', href: 'https://codepen.io/varadPatil' },
   { id: 'framer', label: 'Framer', href: 'https://varadpatil.framer.website/' },
   { id: 'bento', label: 'Varadverse', href: 'https://varadverse.vercel.app/' },

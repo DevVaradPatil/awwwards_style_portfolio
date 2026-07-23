@@ -7,6 +7,7 @@ import SplitText from '@/components/primitives/SplitText.jsx'
 import Reveal from '@/components/primitives/Reveal.jsx'
 import MagneticButton from '@/components/primitives/MagneticButton.jsx'
 import { projects } from '@/data/projects.js'
+import googlePlayBadge from '@/assets/apps/google-play-badge.png'
 import NotFound from '@/pages/NotFound.jsx'
 import useDocumentMeta, { SITE } from '@/lib/useDocumentMeta.js'
 
@@ -30,13 +31,20 @@ export default function CaseStudy() {
     jsonLd: project
       ? {
           '@context': 'https://schema.org',
-          '@type': 'CreativeWork',
+          '@type': project.type === 'app' ? 'MobileApplication' : 'CreativeWork',
           name: project.title,
           description: project.summary,
           url: `${SITE.url}/work/${slug}`,
           ...(project.image ? { image: `${SITE.url}${project.image}` } : {}),
           ...(project.year ? { dateCreated: String(project.year) } : {}),
           ...(project.tags?.length ? { keywords: project.tags.join(', ') } : {}),
+          ...(project.type === 'app'
+            ? {
+                operatingSystem: 'ANDROID',
+                installUrl: project.links?.playstore,
+                offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+              }
+            : {}),
           author: { '@type': 'Person', name: SITE.name, url: SITE.url },
         }
       : null,
@@ -64,7 +72,17 @@ export default function CaseStudy() {
             All work
           </Link>
 
-          <div className="mt-10 flex flex-wrap items-center gap-3 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-60)">
+          {project.logo && (
+            <img
+              src={project.logo}
+              alt={`${project.title} app icon`}
+              width={72}
+              height={72}
+              className="mt-8 h-[72px] w-[72px] rounded-(--radius-lg) border border-(--color-stroke-strong) bg-(--color-elev) object-contain p-1"
+            />
+          )}
+
+          <div className="mt-8 flex flex-wrap items-center gap-3 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-60)">
             <span>{project.year}</span>
             <span className="text-(--color-ink-30)">·</span>
             {project.tags.map((t, i) => (
@@ -86,6 +104,23 @@ export default function CaseStudy() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
+            {project.links?.playstore && (
+              <a
+                href={project.links.playstore}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Get ${project.title} on Google Play`}
+                className="inline-block transition-transform hover:-translate-y-0.5"
+              >
+                <img
+                  src={googlePlayBadge}
+                  alt="Get it on Google Play"
+                  width={646}
+                  height={250}
+                  className="h-14 w-auto"
+                />
+              </a>
+            )}
             {project.links?.live && (
               <MagneticButton variant="solid" href={project.links.live} target="_blank" rel="noreferrer">
                 Live site
@@ -102,19 +137,36 @@ export default function CaseStudy() {
         </Container>
       </section>
 
-      {/* HERO IMAGE */}
+      {/* HERO MEDIA */}
       <section className="relative">
         <Container>
           <Reveal>
-            <div className="overflow-hidden rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-void)">
-              <img
-                src={project.image}
-                alt={`${project.title} — full preview`}
-                className="block h-full w-full object-cover"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+            {project.screenshots?.length ? (
+              <div className="flex gap-4 overflow-x-auto pb-4">
+                {project.screenshots.map((shot, i) => (
+                  <img
+                    key={i}
+                    src={shot}
+                    alt={`${project.title} — screenshot ${i + 1}`}
+                    width={1080}
+                    height={1920}
+                    className="h-[420px] w-auto shrink-0 rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-void) md:h-[560px]"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-void)">
+                <img
+                  src={project.image}
+                  alt={`${project.title} — full preview`}
+                  className="block h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            )}
           </Reveal>
         </Container>
       </section>
