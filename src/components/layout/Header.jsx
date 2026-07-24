@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Download, Menu, X } from 'lucide-react'
 
 const links = [
   { to: '/work', label: 'Work' },
@@ -95,6 +95,16 @@ export default function Header() {
               {l.label}
             </NavLink>
           ))}
+          {/* Résumé is a static file in public/, not a route — plain <a>. */}
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="nav-underline inline-flex items-center gap-1.5 rounded-(--radius-pill) px-4 py-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
+          >
+            Résumé
+            <Download size={12} strokeWidth={2} />
+          </a>
         </nav>
 
         <Link
@@ -143,6 +153,18 @@ export default function Header() {
               </NavLink>
             </li>
           ))}
+          <li>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+              onClick={close}
+              className="flex items-center gap-3 rounded-(--radius-md) px-4 py-4 font-display text-(length:--fs-h3) text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
+            >
+              Résumé
+              <Download size={18} strokeWidth={2} />
+            </a>
+          </li>
           <li className="mt-3 border-t border-(--color-stroke) pt-5">
             <Link
               to="/contact"

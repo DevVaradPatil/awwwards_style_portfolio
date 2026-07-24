@@ -4,7 +4,38 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 0 — Foundation
+## ✅ Status — all phases complete (2026-07-24)
+
+**This is the original build plan (Phases 0–9) that created the site. Every phase shipped.** It is kept as a historical record; the site has since moved on under [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md), which supersedes this document and is also complete.
+
+| Phase | Status | Notes |
+| --- | --- | --- |
+| 0 · Foundation | ✅ | Fonts later moved off CDN → self-hosted woff2 |
+| 1 · Design System Primitives | ✅ | Later joined by `ParticleSphere`, `GlassPhotoCard` |
+| 2 · Smooth Scroll & Motion | ✅ | `PageTransition` later rebuilt in CSS (Framer removed) |
+| 3 · Home Page | ✅ | Hero accent later swapped `Orb3D` → `ParticleSphere` |
+| 4 · Work Index + Case Study | ✅ | prev/next later became a full-bleed next-project banner |
+| 5 · About Page | ✅ | Later gained the glass portrait + "Currently" section |
+| 6 · Contact Page + Form | ✅ | EmailJS REST + `mailto:` fallback |
+| 7 · 404 + Accessibility | ✅ | Global reduced-motion gating deliberately avoided |
+| 8 · Code Splitting, Perf, SEO | ✅ | Later extended with build-time prerendering |
+| 9 · Deployment Readiness | ✅ | SPA rewrite corrected to `/index.html` |
+
+### Where the shipped code intentionally diverged from this plan
+
+These are **not** outstanding work — they are decisions made later, recorded so this document isn't misleading:
+
+- **No `three` chunk** (Phase 0) — three.js was never used. `Orb3D` and `ParticleSphere` are hand-rolled Canvas2D.
+- **No `motion` chunk** (Phase 0) — Framer Motion was removed entirely in Improvement Phase 2 (−41 kB gz). `PageTransition`, the mobile nav and grid entrances are CSS keyframes now.
+- **Fonts are self-hosted** (Phase 0) — Clash Display / Inter / JetBrains Mono ship as subset woff2 from `public/fonts/`, not the Fontshare/Google CDNs, killing two render-blocking third-party stylesheets.
+- **`og-image` is `.jpg`, not `.png`** (Phase 8) — and it was 404-ing until Improvement Phase 3.3 fixed the reference.
+- **`vercel.json` rewrites to `/index.html`, not `/`** (Phase 9) — the original form was the cause of the deep-link 404s.
+- **Prerendering added beyond scope** (Phase 8) — 17 routes get real `<head>` HTML at build time, because `useDocumentMeta` alone is invisible to link unfurlers.
+- **Reduced motion** (Phase 7) — the opt-in `.respect-reduced-motion` class exists as planned, and the "never globally kill motion" rule proved correct: a later global gate froze the whole site for the owner (who browses with reduce-motion on) and was reverted.
+
+---
+
+## Phase 0 — Foundation — ✅ shipped
 **Goal:** Stand up a buildable Vite + React 19 + Tailwind v4 shell with routing, tokens, fonts, and branded loading states.
 
 **Deliverables**
@@ -28,7 +59,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 1 — Design System Primitives
+## Phase 1 — Design System Primitives — ✅ shipped
 **Goal:** Build every reusable primitive in isolation, exercised on `/playground`.
 
 **Deliverables**
@@ -47,7 +78,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 2 — Smooth Scroll & Motion Infrastructure
+## Phase 2 — Smooth Scroll & Motion Infrastructure — ✅ shipped
 **Goal:** Wire Lenis ↔ GSAP ticker, page transitions, and a stateless custom cursor.
 
 **Deliverables**
@@ -67,7 +98,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 3 — Home Page
+## Phase 3 — Home Page — ✅ shipped
 **Goal:** Deliver the marquee Home scene flow.
 
 **Deliverables**
@@ -91,7 +122,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 4 — Work Index + Case Study
+## Phase 4 — Work Index + Case Study — ✅ shipped
 **Goal:** Filterable grid and rich dynamic case-study route.
 
 **Deliverables**
@@ -109,7 +140,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 5 — About Page
+## Phase 5 — About Page — ✅ shipped
 **Goal:** Long-form story with principles, timeline, education, achievements.
 
 **Deliverables**
@@ -124,7 +155,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 6 — Contact Page + Form
+## Phase 6 — Contact Page + Form — ✅ shipped
 **Goal:** Working contact form with EmailJS plumbing and graceful fallback.
 
 **Deliverables**
@@ -142,7 +173,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 7 — 404 + Accessibility Pass
+## Phase 7 — 404 + Accessibility Pass — ✅ shipped
 **Goal:** Branded 404 and a clean a11y sweep across the site.
 
 **Deliverables**
@@ -160,7 +191,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 8 — Code Splitting, Performance, SEO
+## Phase 8 — Code Splitting, Performance, SEO — ✅ shipped
 **Goal:** Hit the performance and SEO targets.
 
 **Deliverables**
@@ -179,7 +210,7 @@ Content from [portfolio_content.md](portfolio_content.md) drives every data file
 
 ---
 
-## Phase 9 — Deployment Readiness
+## Phase 9 — Deployment Readiness — ✅ shipped
 **Goal:** Make the repo push-and-deploy ready.
 
 **Deliverables**

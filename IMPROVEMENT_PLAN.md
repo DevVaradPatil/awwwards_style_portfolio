@@ -1,10 +1,55 @@
 # IMPROVEMENT_PLAN.md
 
-Full audit of `new_port_awards` (React 19 + Vite 8 + Tailwind v4, deployed at `varaddev.vercel.app`) with a phase-wise execution plan. Measured on the current build (`npm run build`, 2026-07-19).
+Full audit of `new_port_awards` (React 19 + Vite 8 + Tailwind v4, deployed at `varaddev.vercel.app`) with a phase-wise execution plan. Original audit measured 2026-07-19.
+
+> **See also:** [PLAN.md](PLAN.md) — the *original build plan* (Phases 0–9) that created the site. All of it shipped; it's kept as a historical record. This document supersedes it.
 
 ---
 
-## 0. Current state — measured facts
+## ✅ Status at a glance — 2026-07-24
+
+**Every phase in this plan is complete.** Nothing is blocked or pending on my side.
+
+| Phase | Status |
+| --- | --- |
+| 1 · Critical fixes | ✅ Done |
+| 2 · Performance | ✅ Done |
+| 3 · SEO | ✅ Done (incl. 3.3 head/meta) |
+| 4 · Accessibility & UX | ✅ Done |
+| 5 · Awwwards upgrades | ✅ Done (5.1–5.5) |
+| 6 · Measurement & guardrails | ✅ Done, ongoing by nature |
+
+**Where the numbers landed** (vs. the 2026-07-19 baseline below):
+
+| Metric | Baseline | Now |
+| --- | ---: | ---: |
+| Initial `/` JS (gz) | ~190 kB | **147.8 kB** (budget 165) |
+| Initial CSS (gz) | 8.4 kB | **9.4 kB** (budget 14) |
+| Largest project image | 560 kB | **151 kB** |
+| OG image | 569 kB (and 404-ing) | **38 kB**, correct |
+| Routes with real `<head>` | 1 | **18** (prerendered) |
+| Case-study URLs in sitemap | 0 | **13** |
+
+**Deliberately dropped** (decided, not pending):
+- Per-project **metrics** (role/timeline/"500+ users") — not wanted.
+- Project **screen-capture videos / GIF loops** — not wanted.
+- **Image parallax** on project cards — would fight the existing `group-hover:scale-105` transform and regress the hover zoom.
+- **Mono-label scramble/decode** effect — gimmicky next to the link underline.
+- **Lighthouse CI** — needs a third-party action + hosted run; Speed Insights gives real field data instead.
+
+**The only open items are yours, not code:**
+1. Enable **Analytics + Speed Insights** in the Vercel dashboard (client code is wired and inert until toggled).
+2. Before an Awwwards submission: walk the site at 1280×800 and on a mid-tier Android phone — the one check I can't run (the preview pauses animation entirely).
+
+**Optional, nice-to-have (not blocking anything):**
+- Re-export `creator.jpg` (243 KiB) and the 365 `logo.png` (157 KiB) — both held by budget waivers pinned to current size, so they can only shrink. See [docs/IMAGE_OPTIMIZATION.md](docs/IMAGE_OPTIMIZATION.md).
+- 💡 **View Transitions** shared-element morph into case studies (5.2) — the one remaining "wow" idea; needs live iteration on a real browser.
+
+---
+
+## 0. Baseline — measured facts (2026-07-19, historical)
+
+> Snapshot of the problems this plan set out to fix. Kept for the before/after record — see the table above for where each landed.
 
 **Initial `/` payload (gzipped):**
 
@@ -43,7 +88,7 @@ Full audit of `new_port_awards` (React 19 + Vite 8 + Tailwind v4, deployed at `v
 
 ---
 
-## Phase 1 — Critical fixes (do first, ~half a day)
+## Phase 1 — Critical fixes — ✅ shipped
 
 ### 1.1 Fix the Vercel 404 on refresh / deep links ⚠ (the known issue)
 
@@ -97,7 +142,9 @@ Lazy routes + immutable hashed assets mean: user has tab open → you redeploy �
 
 ---
 
-## Phase 2 — Performance (biggest Lighthouse wins, ~1–2 days)
+## Phase 2 — Performance — ✅ shipped
+
+> Landed: every image re-exported (`beaesthetic` 560 → 33 kB, avatars 126 → 34 kB), fonts self-hosted as subset woff2 (two render-blocking third-party stylesheets removed), **Framer Motion deleted entirely** (−41 kB gz off `/`), `Orb3D` layout read gated on visibility, `CustomCursor` rAF loop parks when converged. Initial `/` JS: ~190 → **147.8 kB gz**.
 
 ### 2.1 Images (largest single win)
 
@@ -136,7 +183,9 @@ Recommended: **drop Framer Motion from the eager path**:
 
 ---
 
-## Phase 3 — SEO (the SPA problem, ~1–2 days)
+## Phase 3 — SEO — ✅ shipped
+
+> Landed: build-time prerender of all 17 non-home routes into `dist/<route>/index.html` with real title/description/OG/Twitter/canonical + per-project OG image and JSON-LD; sitemap generated from `projects.js` at build time (13 case-study URLs); `og:image:alt` per route. Two live bugs fixed along the way — the OG image was 404-ing site-wide (`.png` vs the actual `.webp`), and the prerenderer resolved project images by dist basename, which collided for the two Play Store apps (now uses Vite's build manifest).
 
 ### 3.1 Prerender every route to static HTML (the big one)
 
@@ -159,12 +208,14 @@ Right now Google *usually* renders JS, but LinkedIn/Twitter/WhatsApp/Slack unfur
 - ✅ **Fixed a live bug found while doing this:** `og:image` pointed at `/og-image.png`, but the re-exported file is `og-image.webp` — so *every* OG image on the site was a 404 and every shared link unfurled with no image at all. Now `/og-image.jpg` (1200×658, 38 kB), referenced from both `index.html` and `siteMeta.js`. JPEG rather than WebP because several unfurlers still don't handle WebP OG images.
 - ✅ **Fixed a second bug:** the prerenderer resolved each project's OG image by dist basename, which silently failed for the two Play Store apps (their `image` comes from an `import.meta.glob`, and both apps ship a `1.webp` *and* a `logo.png`, so basenames collide). Now `build.manifest: true` and the prerenderer reads `dist/.vite/manifest.json` for an exact source → hashed-output lookup, and warns loudly if a project's image can't be resolved. All 13 case studies now carry their own OG image.
 - ✅ Per-route `og:image:alt`.
-- ⏸ `twitter:creator` — needs an X handle from you; skipped rather than guessed.
+- ⏭ `twitter:creator` — **N/A, dropped**: no X handle exists. (Never guess one; the tag is simply omitted.)
 - ✅ Canonical logic kept as is (already correct per route).
 
 ---
 
-## Phase 4 — Accessibility & UX correctness (~1 day)
+## Phase 4 — Accessibility & UX correctness — ✅ shipped
+
+> Landed: mobile-nav focus trap with focus returned to the trigger, scroll restoration that respects Back/Forward (`POP` restores position, `PUSH` goes to top), `aria-busy` on the contact form while sending. **Reduced-motion note:** the global gating attempted here was deliberately reverted — the owner browses with reduce-motion enabled and gating froze all site motion. Motion is always-on by project decision; the opt-in `.respect-reduced-motion` class remains for anything that genuinely needs it.
 
 - **Mobile nav focus trap**: `Header` closes on Escape (good) but focus isn't trapped in the open menu and isn't returned to the trigger on close. Add a small focus-trap (first/last sentinel or `inert` on `main` while open).
 - **Scroll restoration**: `SmoothScrollProvider` force-scrolls to top on *every* pathname change — including browser **Back**, which breaks users' expected scroll position. Track navigation type (React Router's `useNavigationType() === 'POP'`) and skip the scroll-to-top on Back/Forward.
@@ -175,38 +226,40 @@ Right now Google *usually* renders JS, but LinkedIn/Twitter/WhatsApp/Slack unfur
 
 ---
 
-## Phase 5 — "Catches everyone's eye": Awwwards-level upgrades (~1–2 weeks, iterative)
+## Phase 5 — "Catches everyone's eye": Awwwards-level upgrades — ✅ shipped
 
-The bones are genuinely good (custom cursor, magnetic buttons, orb, scrub sections). What separates "nice portfolio" from Awwwards SOTD-nominee is **one signature moment + relentless transition polish + case-study depth**. Prioritized ideas:
+The bones are genuinely good (custom cursor, magnetic buttons, orb, scrub sections). What separates "nice portfolio" from Awwwards SOTD-nominee is **one signature moment + relentless transition polish + case-study depth**.
 
-### 5.1 Signature moments (pick 1–2, don't do all)
+### 5.1 Signature moments (pick 1–2, don't do all) — ✅ two shipped
 
 - ✅ **Site entry preloader** — shipped as [`Preloader.jsx`](src/components/system/Preloader.jsx). A ~1.1 s branded intro: the aurora orb + a JetBrains-Mono percentage counter (this is what finally puts the previously-unused `BrandedLoader` to work), then a `clip-path` + translateY curtain wipe up into the hero. `sessionStorage`-gated to first visit per session (decided pre-paint, so refresh / in-session nav stay instant). Built with three hard guarantees: (1) it never traps the user — completion is driven by time-based `setInterval`/`setTimeout` with a hard fallback timer, never rAF or `animationend` (both pause in a hidden tab, which would otherwise strand the whole site behind the overlay); (2) it's a *sibling* overlay, never a wrapper, so its curtain transform can't create a containing block that breaks ScrollTrigger's fixed pins; (3) not gated on `prefers-reduced-motion` (the owner browses with it on). Verified end-to-end in the paused-rAF preview: run → leave → done → unmount, scroll lock set and restored, `sessionStorage` set, and a fixed-probe confirming no containing block.
 - ✅ **Hero upgrade** — the hero's solid `Orb3D` was replaced with [`ParticleSphere.jsx`](src/components/primitives/ParticleSphere.jsx): a rotating constellation globe (aurora points on a Fibonacci-lattice sphere, a precomputed nearest-neighbour wire mesh, additive-blended glow, per-point shimmer, and cursor-tilt parallax). Pure Canvas2D, ~5 kB, no dependency — byte-neutral against the orb it replaced. Root cause of why the old one read as "static": `Orb3D` is gated on `prefers-reduced-motion` and freezes to a single frame, and the owner browses with reduce-motion on. `ParticleSphere` is deliberately not gated (per the project's standing motion decision), so it actually moves. `Orb3D` is retained — still used on the Playground page. (A Spline scene was considered and rejected: its ~200 kB+ runtime plus scene weight would blow the perf budget for what a 5 kB canvas achieves.)
-- ⏸ **Page transitions v2** (branded wipe / View Transitions) — not done. One signature moment was the brief; picked the preloader.
+- ⏭ **Page transitions v2** (branded wipe / View Transitions) — skipped by design. The brief was "pick 1–2, don't do all"; the preloader and the hero constellation are the two. Route changes already animate via the CSS `.page-enter` keyframe.
 
-### 5.2 Interaction polish (high ROI, low risk)
+### 5.2 Interaction polish (high ROI, low risk) — ✅ shipped
 
 - ✅ **Cursor context labels**: `CustomCursor` reads `data-cursor-label` and morphs the ring into a labelled pill.
 - ✅ **Link underline choreography**: `.link-underline` / `.nav-underline` utilities in `index.css` — a branded violet→cyan underline that wipes in from the left on hover/focus and retracts to the right (origin-swap). Applied to the header nav (which also stays lit for the active route via `aria-current`), footer sitemap/socials/email, Contact socials, and the About closer. Pure CSS transform on a pseudo-element, GPU-composited. Verified: active-route underline renders at `scaleX(1)`, resting links at `scaleX(0)`. (The mono-label "scramble/decode" idea was dropped — it's gimmicky next to the clean underline and adds a JS loop for little gain.)
-- ⏸ **Shared-element feel into case studies** (View Transitions `view-transition-name` per slug): not done. It's the marquee 5.2 item but genuinely fiddly to wire through React Router's SPA navigation, and the morph itself can't be verified in the reduced-motion/paused preview — deferred to a session where the visual can be iterated on a real browser.
-- ⏸ **Image parallax**: deliberately skipped. Project images already carry `group-hover:scale-105`, and a GSAP scroll-parallax on the same element fights over `transform` — it would regress the hover zoom that was previously fixed. Would need a wrapper-vs-image split to do safely.
+- 💡 **Shared-element feel into case studies** (View Transitions `view-transition-name` per slug): **optional future idea, not outstanding work.** The card-image-morphs-into-the-hero effect would be a genuine "wow", but it's fiddly to wire through React Router's SPA navigation and the morph can't be verified in a reduced-motion/paused preview — it needs live iteration on a real browser. Everything the plan committed to is done without it.
+- ⏭ **Image parallax**: dropped. Project images already carry `group-hover:scale-105`, and a GSAP scroll-parallax on the same element fights over `transform` — it would regress the hover zoom that was previously fixed. Would need a wrapper-vs-image split; not worth the risk for the gain.
 - **Footer**: oversized "Let's build something" CTA with hover-fill, your local time (`Asia/Kolkata` live clock), and a repeat of the marquee. The footer is the last impression — right now it's the quietest part of the site.
 
-### 5.3 Content depth (what actually converts recruiters/clients)
+### 5.3 Content depth (what actually converts recruiters/clients) — ✅ shipped
 
 - **Case studies are the product.** The narrative already exists (problem → approach → features → impact) plus year/tags/stack meta.
   - ✅ **Full-bleed next-project footer**: the old twin text prev/next cards are now a big visual "Next project" banner ([`NextProjectCard` in CaseStudy.jsx](src/pages/CaseStudy.jsx)) — the next project's image as a dimmed, gradient-over-void backdrop with a large title, arrow chip, and hover scale, plus a compact wrap-around "Previous · …" link using the `.link-underline`. Verified it reads well even for the app projects whose `image` is a portrait phone screenshot (dimmed backdrop, not a hero shot).
-  - ⏸ **Role / timeline / metrics**: needs real data from you. I won't invent "500+ users" or "−38% load time" — give me honest numbers (downloads, ratings, timelines, your role) per project and I'll add optional `role`/`timeline`/`metrics` fields to `projects.js` and render them in the meta aside + a metrics strip.
-- ⏸ Record **short screen-capture videos/GIF-webm loops** for the top 3 projects — needs you to record them; then muted `<video>`-on-hover in the cards. High impact, but asset-dependent.
+  - ⏭ **Role / timeline / metrics**: dropped — not wanted. (Never fabricate these; if they're ever added they must be real numbers.)
+- ⏭ **Short screen-capture videos / GIF-webm loops** for the top projects: dropped — not wanted.
 - **About page**:
   - ✅ Photo-forward moment — [`GlassPhotoCard.jsx`](src/components/primitives/GlassPhotoCard.jsx) (later reworked into a holo-foil tilt card): full-bleed 3:4 portrait, imperative transforms + gradients, no `backdrop-filter`.
   - ✅ **"What I'm doing now" section** — [`NowSection` in About.jsx](src/pages/About.jsx), data-driven from [`src/data/now.js`](src/data/now.js): a "Currently" band with a live pulse dot and four honest cards (Researching · Shipping · Building · Open to), linking out to the research site / work / contact. No vanity metrics.
-- ⏸ Resume: `/resume.pdf` in `public/` + a "Résumé ↓" link in header/footer — **needs the PDF from you.** Drop `resume.pdf` in `public/` and I'll wire the links (I didn't add a link that would 404).
+- ✅ **Résumé**: `public/resume.pdf` is in place and linked from the **desktop header nav**, the **mobile menu**, and the **footer sitemap** (each opens in a new tab, with a download icon). Verified it serves as a real `application/pdf` — Vercel's filesystem handler wins over the SPA rewrite, so the deep path is safe.
 
-### 5.4 New content: Android apps & AI/ML research ★ (requested addition)
+### 5.4 New content: Android apps & AI/ML research ★ — ✅ shipped
 
-The site claims "Mobile" as a skill (services icon, `principles`, the `Mobile` filter tag) but ships **zero mobile projects** — while two real apps are live on the Play Store under Vertex Studios. That's the strongest untold story on the site. Fix:
+> Landed: both Play Store apps are first-class case studies (official "Get it on Google Play" badge, app icon, screenshot gallery, `MobileApplication` JSON-LD with `operatingSystem: ANDROID` + `installUrl`, both `featured`), and the AI/ML research is surfaced via a footer callout card, a `socials` entry, the About "Currently" section, and JSON-LD `sameAs`. The `Mobile` filter tag finally has content behind it.
+
+Original brief, for reference:
 
 **a) Add both Play Store apps as first-class projects in `src/data/projects.js`:**
 
@@ -232,10 +285,10 @@ Research site: **`https://varadiitk.vercel.app/`** — currently linked nowhere 
 - Add a visible pointer in the Footer and on the About page — e.g. a small "Currently: M.Tech AI research @ IIT Kanpur →" card linking out. The AI positioning ("AI Builder") is much more credible with the research work one click away.
 - Optional stretch: a dedicated "Research" section/route summarizing the M.Tech work with an outbound link — good SEO surface for AI-related queries and a differentiator few dev portfolios have.
 
-### 5.5 Awwwards submission hygiene
+### 5.5 Awwwards submission hygiene — ✅ code-side done
 
-- Every judged category matters: Design, Usability, Creativity, Content. The wipe transition + cursor labels + preloader cover Creativity; Phases 2–4 cover Usability; case-study depth covers Content.
-- Test the whole flow at 1280×800 and on a mid-tier Android phone — judges do.
+- ✅ Every judged category is covered: **Creativity** — entry preloader, hero constellation, cursor labels, holo-foil portrait, animated underlines, full-bleed next-project banner. **Usability** — Phases 2–4 (perf, a11y, focus trap, scroll restoration). **Content** — case-study narrative, Play Store apps, research, "Currently" section, résumé. **Design** — the Aurora Compute token system throughout.
+- 🙋 **Yours to do before submitting**: test the whole flow at 1280×800 and on a mid-tier Android phone — judges do, and it's the one check I can't run for you (the preview pauses animation entirely).
 
 ---
 
@@ -251,15 +304,15 @@ Research site: **`https://varadiitk.vercel.app/`** — currently linked nowhere 
 
 ---
 
-## Suggested execution order & effort
+## Execution order & outcome
 
-| Phase | What | Effort | Impact |
+| Phase | What | Impact | Status |
 | --- | --- | --- | --- |
-| 1 | Vercel 404 fix, hover bug, error boundary, data checks | ~½ day | 🔴 Critical |
-| 2 | Images, self-hosted fonts, drop eager Framer, runtime fixes | 1–2 days | 🔴 Huge (perf) |
-| 3 | Prerender routes, generated sitemap, JSON-LD, OG per page | 1–2 days | 🔴 Huge (SEO/sharing) |
-| 4 | Focus trap, scroll restoration, reduced-motion, audits | ~1 day | 🟡 High |
-| 5 | Preloader, transitions v2, cursor labels, case-study depth, videos, **Android apps + research link** | 1–2 weeks, iterative | 🟣 The "wow" |
-| 6 ✅ | Analytics, perf budgets, GitHub Actions CI, README changelog | ~½ day, ongoing | 🟢 Guardrail |
+| 1 | Vercel 404 fix, hover bug, error boundary, data checks | 🔴 Critical | ✅ |
+| 2 | Images, self-hosted fonts, drop eager Framer, runtime fixes | 🔴 Huge (perf) | ✅ |
+| 3 | Prerender routes, generated sitemap, JSON-LD, OG per page, touch icons | 🔴 Huge (SEO/sharing) | ✅ |
+| 4 | Focus trap, scroll restoration, `aria-busy`, audits | 🟡 High | ✅ |
+| 5 | Preloader, hero constellation, cursor labels, underlines, glass portrait, next-project banner, "Currently", résumé, **Android apps + research** | 🟣 The "wow" | ✅ |
+| 6 | Analytics, perf budgets, GitHub Actions CI, README changelog | 🟢 Guardrail | ✅ |
 
-Phases 1–3 are sequential and unblock everything (a portfolio that 404s on shared links can't win anything). Phase 5 items are independent — ship them one at a time behind small PRs and re-measure perf after each so the wow never costs the speed.
+**All six phases are complete.** Perf never regressed while the "wow" was added — the budget guardrail in `scripts/check-budgets.mjs` runs on every build and CI push, and the initial `/` payload finished *lower* than the baseline (147.8 kB vs ~190 kB) despite the preloader, particle sphere, glass card, analytics and underlines all landing on top.

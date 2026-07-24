@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, FlaskConical } from 'lucide-react'
+import { ArrowUpRight, Download, FlaskConical } from 'lucide-react'
 import { contact, socials, research } from '@/data/socials.js'
 
 const navLinks = [
@@ -106,6 +106,17 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
+                >
+                  <span className="link-underline">Résumé</span>
+                  <Download size={12} strokeWidth={2} />
+                </a>
+              </li>
             </ul>
           </nav>
 
