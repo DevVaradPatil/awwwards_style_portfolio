@@ -17,14 +17,24 @@
     <meta property="og:title" content="Varad Patil — Developer · Designer · AI Builder" />
     <meta property="og:description" content="Full-stack developer & AI enthusiast. Building fast, scalable, immersive web experiences." />
     <meta property="og:url" content="https://varaddev.vercel.app/" />
-    <meta property="og:image" content="https://varaddev.vercel.app/og-image.png" />
+    <meta property="og:image" content="https://varaddev.vercel.app/og-image.jpg" />
+    <!-- No og:image:width/height here on purpose: the prerenderer swaps
+         og:image per case study for that project's screenshot, and it parses
+         projects.js as text so it cannot know each image's real dimensions.
+         Wrong size hints render worse than none. -->
+    <meta property="og:image:alt" content="Varad Patil — Developer, Designer, AI Builder" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Varad Patil — Developer · Designer · AI Builder" />
     <meta name="twitter:description" content="Full-stack developer & AI enthusiast. Building fast, scalable, immersive web experiences." />
-    <meta name="twitter:image" content="https://varaddev.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://varaddev.vercel.app/og-image.jpg" />
 
     <link rel="canonical" href="https://varaddev.vercel.app/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- iOS home-screen bookmarks ignore favicon.svg and fall back to a
+         screenshot; apple-touch-icon must be a PNG. Rendered from favicon.svg
+         onto the void surface so it reads on both light and dark springboards. -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Self-hosted fonts (see scripts/fetch-fonts.mjs). Preload the two
          above-the-fold faces; the rest load via @font-face in fonts.css. -->

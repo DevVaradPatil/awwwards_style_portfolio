@@ -3,7 +3,7 @@ import Container from '@/components/system/Container.jsx'
 import SplitText from '@/components/primitives/SplitText.jsx'
 import MagneticButton from '@/components/primitives/MagneticButton.jsx'
 import GradientBlob from '@/components/primitives/GradientBlob.jsx'
-import Orb3D from '@/components/primitives/Orb3D.jsx'
+import ParticleSphere from '@/components/primitives/ParticleSphere.jsx'
 
 export default function Hero() {
   return (
@@ -85,7 +85,7 @@ export default function Hero() {
 
         {/* ORB */}
         <div className="relative flex items-center justify-center md:order-none">
-          <Orb3D size={420} className="mx-auto" />
+          <ParticleSphere size={420} className="mx-auto" />
           <div className="pointer-events-none absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-30)">
             Aurora Compute · v0.1
           </div>

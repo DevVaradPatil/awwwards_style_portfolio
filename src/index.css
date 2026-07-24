@@ -171,6 +171,60 @@ canvas {
 }
 
 /* ---------------------------------------------------------------
+   Animated link underline (Phase 5.2 interaction polish)
+
+   A branded violet→cyan underline that wipes in from the LEFT on
+   hover/focus and retracts to the RIGHT on leave — the origin swap is
+   the "choreography" that makes it feel drawn rather than toggled.
+
+     .link-underline — inline text links; the rule spans the text box,
+                       so wrap just the label when a link also has an icon.
+     .nav-underline  — padded header nav items (inset to match px-4) that
+                       ALSO stay lit for the active route via aria-current.
+
+   Pure CSS transform on a pseudo-element: GPU-composited, no layout,
+   no JS. Not reduced-motion gated — it only moves on user hover/focus.
+   --------------------------------------------------------------- */
+.link-underline,
+.nav-underline {
+  position: relative;
+}
+
+.link-underline::after,
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -0.18em;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-violet), var(--color-cyan));
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.42s var(--ease-out-expo);
+}
+
+.link-underline::after {
+  left: 0;
+  right: 0;
+}
+
+/* Inset to sit under the label, not the pill padding (px-4 = 1rem). */
+.nav-underline::after {
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.4rem;
+}
+
+.link-underline:hover::after,
+.link-underline:focus-visible::after,
+.nav-underline:hover::after,
+.nav-underline:focus-visible::after,
+.nav-underline[aria-current="page"]::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* ---------------------------------------------------------------
    Skip link
    --------------------------------------------------------------- */
 .skip-link {
@@ -307,4 +361,37 @@ canvas {
 @keyframes auroraShimmer {
   0% { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }
+}
+
+/* ---------------------------------------------------------------
+   Entry preloader (components/system/Preloader.jsx)
+
+   A fixed sibling overlay — NOT a wrapper around the routed page. The curtain
+   transform below is therefore safe: it can't create a containing block for
+   the page's position:fixed ScrollTrigger pins the way a transform on the
+   .page-enter wrapper did. The element unmounts (timer-driven) right after the
+   wipe, so `forwards` here just holds the off-screen state until React removes
+   it — nothing lingers on any ancestor of real content.
+   --------------------------------------------------------------- */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: var(--color-void);
+  will-change: transform;
+}
+
+.intro--leaving {
+  animation: introReveal 0.75s var(--ease-in-out-quart) forwards;
+}
+
+@keyframes introReveal {
+  from {
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    transform: translateY(-102%);
+    clip-path: inset(0 0 100% 0);
+  }
 }

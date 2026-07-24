@@ -85,7 +85,7 @@ export default function Header() {
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                `rounded-(--radius-pill) px-4 py-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] transition-colors ${
+                `nav-underline rounded-(--radius-pill) px-4 py-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] transition-colors ${
                   isActive
                     ? 'text-(--color-ink-100)'
                     : 'text-(--color-ink-60) hover:text-(--color-ink-100)'

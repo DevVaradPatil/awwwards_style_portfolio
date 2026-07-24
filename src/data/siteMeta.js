@@ -10,7 +10,9 @@ export const SITE = {
   defaultTitle: 'Varad Patil — Developer · Designer · AI Builder',
   defaultDescription:
     'Varad Patil — Full-stack developer & AI enthusiast crafting fast, scalable, immersive web experiences. M.Tech AI for Sustainability, IIT Kanpur.',
-  ogImage: '/og-image.png',
+  // Must match a file that actually exists in public/ — unfurlers silently
+  // show nothing on a 404, and there is no error anywhere to notice.
+  ogImage: '/og-image.jpg',
 }
 
 // Static-route meta. Case studies (/work/:slug) derive their meta from the

@@ -49,7 +49,7 @@ function replaceMeta(html, attr, key, content) {
   return html.replace(re, `<meta ${attr}="${key}" content="${escAttr(content)}" />`)
 }
 
-function buildHtml({ title, description, path, ogImage, jsonLd }) {
+function buildHtml({ title, description, path, ogImage, ogImageAlt, jsonLd }) {
   const t = fullTitle(title)
   const desc = description || SITE.defaultDescription
   const url = `${SITE.url}${path}`
@@ -62,6 +62,7 @@ function buildHtml({ title, description, path, ogImage, jsonLd }) {
   html = replaceMeta(html, 'property', 'og:description', desc)
   html = replaceMeta(html, 'property', 'og:url', url)
   html = replaceMeta(html, 'property', 'og:image', image)
+  html = replaceMeta(html, 'property', 'og:image:alt', ogImageAlt || t)
   html = replaceMeta(html, 'name', 'twitter:title', t)
   html = replaceMeta(html, 'name', 'twitter:description', desc)
   html = replaceMeta(html, 'name', 'twitter:image', image)
@@ -89,16 +90,43 @@ function writeRoute(path, html) {
 // --- case-study data (parsed from projects.js as text) ----------------------
 const projectsSrc = readFileSync(resolve(root, 'src/data/projects.js'), 'utf8')
 
-// image variable -> source basename (sans extension)
-const imgVarToBase = {}
-for (const m of projectsSrc.matchAll(/import\s+(\w+)\s+from\s+['"][^'"]*\/([\w.-]+)\.webp['"]/g)) {
-  imgVarToBase[m[1]] = m[2]
+// Vite's build manifest maps each source asset to its hashed output. We use it
+// instead of guessing from the dist basename, which is ambiguous: both Play
+// Store apps ship a `1.webp` and a `logo.png`, so a basename lookup silently
+// resolved one app's OG image to the other app's screenshot.
+const manifest = JSON.parse(readFileSync(resolve(DIST, '.vite/manifest.json'), 'utf8'))
+const srcToAsset = (src) => (manifest[src] ? `/${manifest[src].file}` : null)
+
+// `import foo from '@/assets/…'` -> source path Vite keys the manifest by.
+const imgVarToSrc = {}
+for (const m of projectsSrc.matchAll(/import\s+(\w+)\s+from\s+['"]@\/(assets\/[^'"]+)['"]/g)) {
+  imgVarToSrc[m[1]] = `src/${m[2]}`
 }
 
-// hashed dist asset lookup: basename -> "/assets/<base>-<hash>.webp"
-const distAssets = readdirSync(resolve(DIST, 'assets')).filter((f) => f.endsWith('.webp'))
-const baseToAsset = {}
-for (const f of distAssets) baseToAsset[f.split('-')[0]] = `/assets/${f}`
+// `const foo = sortedShots(import.meta.glob('../assets/…/*.webp', …))` -> the
+// same ordered list the app builds at runtime, so `foo[0]` resolves correctly.
+const globVarToSrcs = {}
+for (const m of projectsSrc.matchAll(
+  /const\s+(\w+)\s*=\s*sortedShots\(\s*import\.meta\.glob\(\s*['"]\.\.\/(assets\/[^'"*]+)\/\*\.(\w+)['"]/g,
+)) {
+  const [, varName, dir, ext] = m
+  globVarToSrcs[varName] = readdirSync(resolve(root, 'src', dir))
+    .filter((f) => f.endsWith(`.${ext}`))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    .map((f) => `src/${dir}/${f}`)
+}
+
+// Resolves an `image:` right-hand side — either `varName` or `varName[N]`.
+function resolveImage(expr) {
+  if (!expr) return null
+  const indexed = expr.match(/^(\w+)\[(\d+)\]$/)
+  if (indexed) {
+    const list = globVarToSrcs[indexed[1]]
+    return list ? srcToAsset(list[Number(indexed[2])]) : null
+  }
+  const src = imgVarToSrc[expr]
+  return src ? srcToAsset(src) : null
+}
 
 function parseProjects() {
   const slugMatches = [...projectsSrc.matchAll(/slug:\s*['"]([^'"]+)['"]/g)]
@@ -114,9 +142,11 @@ function parseProjects() {
     const tags = [...(chunk.match(/tags:\s*\[([^\]]*)\]/)?.[1] || '').matchAll(/['"]([^'"]+)['"]/g)].map(
       (t) => t[1],
     )
-    const imageVar = chunk.match(/image:\s*(\w+)/)?.[1]
-    const base = imageVar ? imgVarToBase[imageVar] : null
-    const asset = base ? baseToAsset[base] : null
+    const imageExpr = chunk.match(/image:\s*(\w+(?:\[\d+\])?)/)?.[1]
+    const asset = resolveImage(imageExpr)
+    if (imageExpr && !asset) {
+      console.warn(`[prerender] ${slug}: could not resolve image \`${imageExpr}\` — falling back to the default OG image.`)
+    }
     out.push({ slug, title, summary, year, tags, asset })
   }
   return out
@@ -151,7 +181,11 @@ for (const p of projects) {
     ...(p.tags.length ? { keywords: p.tags.join(', ') } : {}),
     author: { '@type': 'Person', name: SITE.name, url: SITE.url },
   }
-  writeRoute(path, buildHtml({ title: p.title, description: p.summary, path, ogImage, jsonLd }))
+  const ogImageAlt = ogImage ? `${p.title} — project preview` : undefined
+  writeRoute(
+    path,
+    buildHtml({ title: p.title, description: p.summary, path, ogImage, ogImageAlt, jsonLd }),
+  )
   count++
 }
 

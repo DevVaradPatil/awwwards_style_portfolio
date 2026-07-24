@@ -103,7 +103,7 @@ function InfoCard() {
                 rel="noreferrer"
                 className="group flex items-center justify-between text-(length:--fs-sm) text-(--color-ink-100) transition-colors hover:text-(--color-cyan)"
               >
-                <span className="font-mono uppercase tracking-[0.2em]">{s.label}</span>
+                <span className="link-underline font-mono uppercase tracking-[0.2em]">{s.label}</span>
                 <ArrowUpRight
                   size={16}
                   strokeWidth={2}
@@ -180,6 +180,7 @@ function ContactForm() {
         noValidate
         className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) p-8 md:p-10"
         aria-describedby={statusId}
+        aria-busy={sending}
       >
         <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-30)">
           Send a message

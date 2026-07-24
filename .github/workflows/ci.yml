@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # `build` also runs the prebuild sitemap generator, the postbuild
+      # prerenderer, and scripts/check-budgets.mjs — so a perf regression
+      # (a new eager vendor, an unoptimised image) fails the job here rather
+      # than shipping quietly to production.
+      - name: Build + perf budgets
+        run: npm run build

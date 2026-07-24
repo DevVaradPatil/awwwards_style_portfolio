@@ -60,7 +60,7 @@ export default function Footer() {
               href={`mailto:${contact.email}`}
               className="mt-6 inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-100) transition-colors hover:text-(--color-cyan)"
             >
-              {contact.email}
+              <span className="link-underline">{contact.email}</span>
               <ArrowUpRight size={14} strokeWidth={2} />
             </a>
 
@@ -100,7 +100,7 @@ export default function Footer() {
                 <li key={l.to}>
                   <Link
                     to={l.to}
-                    className="font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
+                    className="link-underline inline-block font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
                   >
                     {l.label}
                   </Link>
@@ -123,7 +123,7 @@ export default function Footer() {
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
                   >
-                    {s.label}
+                    <span className="link-underline">{s.label}</span>
                     <ArrowUpRight size={12} strokeWidth={2} />
                   </a>
                 </li>

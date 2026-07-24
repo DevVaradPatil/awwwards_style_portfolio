@@ -153,11 +153,14 @@ Right now Google *usually* renders JS, but LinkedIn/Twitter/WhatsApp/Slack unfur
 - Add per-page JSON-LD: `CreativeWork`/`SoftwareApplication` on case studies (name, description, image, url, author), `BreadcrumbList` on `/work/<slug>`, and `WebSite` on `/`.
 - Per-project OG images: even just using each project's screenshot as its `og:image` (needs Phase 3.1 to be visible to unfurlers) massively improves how shared links look.
 
-### 3.3 Head/meta polish
+### 3.3 Head/meta polish — ✅ shipped
 
-- Add `apple-touch-icon` (180×180 PNG) and a minimal `site.webmanifest` (name, icons, theme color) — favicon.svg alone breaks iOS bookmarks.
-- `twitter:creator` if you have an X handle.
-- Keep canonical logic as is (already correct per route).
+- ✅ `apple-touch-icon` (180×180 PNG) + `icon-192` / `icon-512` and a minimal `site.webmanifest` (name, icons, theme color, standalone display). All three PNGs were rendered from `favicon.svg` onto the `--color-void` surface — Node has no SVG rasteriser and this ffmpeg build has no SVG decoder, so they were generated through a browser canvas.
+- ✅ **Fixed a live bug found while doing this:** `og:image` pointed at `/og-image.png`, but the re-exported file is `og-image.webp` — so *every* OG image on the site was a 404 and every shared link unfurled with no image at all. Now `/og-image.jpg` (1200×658, 38 kB), referenced from both `index.html` and `siteMeta.js`. JPEG rather than WebP because several unfurlers still don't handle WebP OG images.
+- ✅ **Fixed a second bug:** the prerenderer resolved each project's OG image by dist basename, which silently failed for the two Play Store apps (their `image` comes from an `import.meta.glob`, and both apps ship a `1.webp` *and* a `logo.png`, so basenames collide). Now `build.manifest: true` and the prerenderer reads `dist/.vite/manifest.json` for an exact source → hashed-output lookup, and warns loudly if a project's image can't be resolved. All 13 case studies now carry their own OG image.
+- ✅ Per-route `og:image:alt`.
+- ⏸ `twitter:creator` — needs an X handle from you; skipped rather than guessed.
+- ✅ Canonical logic kept as is (already correct per route).
 
 ---
 
@@ -178,23 +181,23 @@ The bones are genuinely good (custom cursor, magnetic buttons, orb, scrub sectio
 
 ### 5.1 Signature moments (pick 1–2, don't do all)
 
-- **Site entry preloader**: a 1–1.5 s branded intro (percentage counter in JetBrains Mono, aurora gradient sweep, then a clip-path curtain reveal into the hero). You already have loader keyframes + the unused `BrandedLoader` — this is the perfect home for it. Gate to first visit per session (`sessionStorage`) so repeat navigation stays instant.
-- **Hero upgrade**: make the Orb *react* — scale/distort on scroll velocity (wire Lenis velocity into the orb's spin speed), or morph it between sections. A "living" element that responds to the visitor is exactly what juries screenshot.
-- **Page transitions v2**: replace the generic fade/slide with a branded wipe — full-screen `clip-path` curtain in `--color-elev` with the wordmark, or an expanding circle from the clicked link (View Transitions API is now viable and nearly free).
+- ✅ **Site entry preloader** — shipped as [`Preloader.jsx`](src/components/system/Preloader.jsx). A ~1.1 s branded intro: the aurora orb + a JetBrains-Mono percentage counter (this is what finally puts the previously-unused `BrandedLoader` to work), then a `clip-path` + translateY curtain wipe up into the hero. `sessionStorage`-gated to first visit per session (decided pre-paint, so refresh / in-session nav stay instant). Built with three hard guarantees: (1) it never traps the user — completion is driven by time-based `setInterval`/`setTimeout` with a hard fallback timer, never rAF or `animationend` (both pause in a hidden tab, which would otherwise strand the whole site behind the overlay); (2) it's a *sibling* overlay, never a wrapper, so its curtain transform can't create a containing block that breaks ScrollTrigger's fixed pins; (3) not gated on `prefers-reduced-motion` (the owner browses with it on). Verified end-to-end in the paused-rAF preview: run → leave → done → unmount, scroll lock set and restored, `sessionStorage` set, and a fixed-probe confirming no containing block.
+- ✅ **Hero upgrade** — the hero's solid `Orb3D` was replaced with [`ParticleSphere.jsx`](src/components/primitives/ParticleSphere.jsx): a rotating constellation globe (aurora points on a Fibonacci-lattice sphere, a precomputed nearest-neighbour wire mesh, additive-blended glow, per-point shimmer, and cursor-tilt parallax). Pure Canvas2D, ~5 kB, no dependency — byte-neutral against the orb it replaced. Root cause of why the old one read as "static": `Orb3D` is gated on `prefers-reduced-motion` and freezes to a single frame, and the owner browses with reduce-motion on. `ParticleSphere` is deliberately not gated (per the project's standing motion decision), so it actually moves. `Orb3D` is retained — still used on the Playground page. (A Spline scene was considered and rejected: its ~200 kB+ runtime plus scene weight would blow the perf budget for what a 5 kB canvas achieves.)
+- ⏸ **Page transitions v2** (branded wipe / View Transitions) — not done. One signature moment was the brief; picked the preloader.
 
 ### 5.2 Interaction polish (high ROI, low risk)
 
-- **Cursor context labels**: your `CustomCursor` already supports `data-cursor="link"` — extend it with `data-cursor-label="View case"` so hovering a project card morphs the ring into a pill saying "View →". Classic Awwwards move, ~30 lines.
-- **Shared-element feel into case studies**: on project-card click, animate the card image to the case-study hero position (View Transitions API `view-transition-name` per slug makes this nearly free in Chromium; graceful fallback elsewhere).
-- **Link underline choreography**: animated underline (scale-x origin-swap) on all inline links; text "scramble/decode" effect on the mono uppercase labels on hover.
-- **Image parallax**: subtle `yPercent` drift on project images inside their `overflow-hidden` frames while scrolling (GSAP, you already have the helpers).
+- ✅ **Cursor context labels**: `CustomCursor` reads `data-cursor-label` and morphs the ring into a labelled pill.
+- ✅ **Link underline choreography**: `.link-underline` / `.nav-underline` utilities in `index.css` — a branded violet→cyan underline that wipes in from the left on hover/focus and retracts to the right (origin-swap). Applied to the header nav (which also stays lit for the active route via `aria-current`), footer sitemap/socials/email, Contact socials, and the About closer. Pure CSS transform on a pseudo-element, GPU-composited. Verified: active-route underline renders at `scaleX(1)`, resting links at `scaleX(0)`. (The mono-label "scramble/decode" idea was dropped — it's gimmicky next to the clean underline and adds a JS loop for little gain.)
+- ⏸ **Shared-element feel into case studies** (View Transitions `view-transition-name` per slug): not done. It's the marquee 5.2 item but genuinely fiddly to wire through React Router's SPA navigation, and the morph itself can't be verified in the reduced-motion/paused preview — deferred to a session where the visual can be iterated on a real browser.
+- ⏸ **Image parallax**: deliberately skipped. Project images already carry `group-hover:scale-105`, and a GSAP scroll-parallax on the same element fights over `transform` — it would regress the hover zoom that was previously fixed. Would need a wrapper-vs-image split to do safely.
 - **Footer**: oversized "Let's build something" CTA with hover-fill, your local time (`Asia/Kolkata` live clock), and a repeat of the marquee. The footer is the last impression — right now it's the quietest part of the site.
 
 ### 5.3 Content depth (what actually converts recruiters/clients)
 
 - **Case studies are the product.** Add to each: role, timeline, 2–3 metrics ("−38% load time", "500+ users"), a process section (problem → constraints → decisions → result) with 2–4 supporting images/video, and a full-bleed next-project footer with big preview image (you have prev/next logic already — make it visual).
 - Record **short screen-capture videos/GIF-webm loops** for the top 3 projects — motion in cards (muted `<video>` on hover) outperforms static screenshots dramatically.
-- **About page**: add a real photo-forward moment and a "what I'm doing now" section — juries and clients both read About second.
+- **About page**: ✅ the portrait is now a photo-forward moment — [`GlassPhotoCard.jsx`](src/components/primitives/GlassPhotoCard.jsx), a full-bleed 3:4 portrait under a tilt-on-hover glass pane (cursor specular glare, reflection streak, rim light, violet drop-glow). Imperative transforms + CSS gradients only — no `backdrop-filter`, so it stays 60fps. The old treatment was `object-contain` with padding (gaps + letterboxing); the card ratio now matches the source so `object-cover` fills with no crop. Still to do: a "what I'm doing now" section.
 - Resume: `/resume.pdf` in `public/` + a "Résumé ↓" link in header/footer.
 
 ### 5.4 New content: Android apps & AI/ML research ★ (requested addition)
@@ -232,12 +235,15 @@ Research site: **`https://varadiitk.vercel.app/`** — currently linked nowhere 
 
 ---
 
-## Phase 6 — Measurement & guardrails (ongoing)
+## Phase 6 — Measurement & guardrails (ongoing) — ✅ shipped
 
-- **Analytics**: add Vercel Analytics + Speed Insights (zero-config on Vercel) — you need field LCP/CLS data, not just lab runs.
-- **Perf budget in CI**: `npm run build` + a tiny script that fails if `/` gz JS > 160 kB or any image > 150 kB. (Lighthouse CI via GitHub Action if you want the full treatment.)
-- Re-run Lighthouse after each phase; track: LCP < 2.0 s (4G), CLS < 0.05, TBT < 150 ms, SEO = 100, A11y ≥ 95.
-- Add a `CHANGELOG`-style section to README as phases land (nice signal for people reading the repo — it *is* a portfolio piece).
+- ✅ **Analytics**: Vercel Analytics + Speed Insights, wired in `src/components/system/Analytics.jsx`. Lazy-loaded and production-only so measurement costs nothing on the critical path, with `/work/:slug` normalised to `/work/[slug]` so 13 case studies group into one row instead of fragmenting the report.
+  - **Still needs a dashboard toggle**: Analytics and Speed Insights must be enabled in the Vercel project settings before data starts flowing. The client code is a no-op until then.
+- ✅ **Perf budget in CI**: `scripts/check-budgets.mjs`, run automatically as part of `postbuild` (so it gates local builds *and* Vercel deploys) plus a `.github/workflows/ci.yml` running lint + build + budgets on every push/PR. Budgets: initial `/` JS ≤ 165 kB gz (currently 147.8), initial CSS ≤ 14 kB gz (9.0), any lazy chunk ≤ 9 kB gz (5.2), any image ≤ 150 kB. The initial-payload number is parsed out of `dist/index.html` (entry + modulepreloads) so it can't drift from reality.
+  - Two legacy images (`creator.jpg` 243.5 KiB, the Wordigo `logo.png` 157 KiB) exceed the image cap and are held by explicit waivers pinned to their current size — they may shrink but never grow. Delete the waiver once re-exported (see `docs/IMAGE_OPTIMIZATION.md`).
+  - Lighthouse CI was deliberately skipped: it needs a third-party action and a hosted run to be meaningful, and Speed Insights already gives real field data.
+- ✅ **README changelog**: phase-by-phase log plus a live budget table, and the stale bits (Framer Motion, third-party font hosts) corrected against the code as it stands.
+- 🔁 **Ongoing**: watch field data in Speed Insights — LCP < 2.0 s, CLS < 0.05, INP < 200 ms. Lab Lighthouse on a fast desktop will always look fine; the field numbers are the ones that matter.
 
 ---
 
@@ -250,6 +256,6 @@ Research site: **`https://varadiitk.vercel.app/`** — currently linked nowhere 
 | 3 | Prerender routes, generated sitemap, JSON-LD, OG per page | 1–2 days | 🔴 Huge (SEO/sharing) |
 | 4 | Focus trap, scroll restoration, reduced-motion, audits | ~1 day | 🟡 High |
 | 5 | Preloader, transitions v2, cursor labels, case-study depth, videos, **Android apps + research link** | 1–2 weeks, iterative | 🟣 The "wow" |
-| 6 | Analytics, perf budgets, Lighthouse CI | ~½ day, ongoing | 🟢 Guardrail |
+| 6 ✅ | Analytics, perf budgets, GitHub Actions CI, README changelog | ~½ day, ongoing | 🟢 Guardrail |
 
 Phases 1–3 are sequential and unblock everything (a portfolio that 404s on shared links can't win anything). Phase 5 items are independent — ship them one at a time behind small PRs and re-measure perf after each so the wow never costs the speed.

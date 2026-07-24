@@ -15,6 +15,7 @@ import GradientBlob from '@/components/primitives/GradientBlob.jsx'
 import SplitText from '@/components/primitives/SplitText.jsx'
 import Reveal from '@/components/primitives/Reveal.jsx'
 import MagneticButton from '@/components/primitives/MagneticButton.jsx'
+import GlassPhotoCard from '@/components/primitives/GlassPhotoCard.jsx'
 import creator from '@/assets/creator.jpg'
 import { principles, contact, socials } from '@/data/socials.js'
 import { skillGroups } from '@/data/skills.js'
@@ -100,17 +101,14 @@ function Hero() {
 
         <div className="relative flex items-center justify-center">
           <div className="absolute inset-0 m-auto h-72 w-72 rounded-full brand-gradient-surface opacity-30 blur-3xl" />
-          <div className="relative aspect-square w-full max-w-md overflow-hidden rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev)">
-            <img
-              src={creator}
-              alt="Illustrated portrait of Varad Patil"
-              loading="eager"
-              decoding="async"
-              width="512"
-              height="512"
-              className="absolute inset-0 h-full w-full object-contain p-8"
-            />
-          </div>
+          <GlassPhotoCard
+            src={creator}
+            alt="Portrait of Varad Patil"
+            ratio="3 / 4"
+            width={513}
+            height={683}
+            className="w-full max-w-md"
+          />
         </div>
       </Container>
     </section>
@@ -523,7 +521,7 @@ function Closer() {
               href={s.href}
               target="_blank"
               rel="noreferrer"
-              className="transition-colors hover:text-(--color-ink-100)"
+              className="link-underline transition-colors hover:text-(--color-ink-100)"
             >
               {s.label} â†—
             </a>
