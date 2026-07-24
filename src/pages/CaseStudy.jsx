@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, ArrowUpRight, ExternalLink, Code2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ExternalLink, Code2 } from 'lucide-react'
 import Container from '@/components/system/Container.jsx'
 import GradientBlob from '@/components/primitives/GradientBlob.jsx'
 import SplitText from '@/components/primitives/SplitText.jsx'
@@ -230,11 +230,27 @@ export default function CaseStudy() {
         </Container>
       </section>
 
-      {/* PREV / NEXT */}
-      <section className="border-t border-(--color-stroke) py-20">
-        <Container className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <NavCard project={prev} direction="prev" />
-          <NavCard project={next} direction="next" />
+      {/* NEXT PROJECT */}
+      <section className="border-t border-(--color-stroke) py-16 md:py-20">
+        <Container>
+          <div className="flex items-center justify-between gap-4">
+            <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-60)">
+              Keep exploring
+            </p>
+            {prev && (
+              <Link
+                to={`/work/${prev.slug}`}
+                className="group inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
+              >
+                <ArrowLeft size={14} strokeWidth={2} />
+                <span className="link-underline">
+                  <span className="hidden sm:inline">Previous · </span>
+                  {prev.title}
+                </span>
+              </Link>
+            )}
+          </div>
+          <NextProjectCard project={next} />
         </Container>
       </section>
     </>
@@ -265,32 +281,46 @@ function Block({ kicker, body }) {
   )
 }
 
-function NavCard({ project, direction }) {
-  if (!project) return <div />
-  const isPrev = direction === 'prev'
+function NextProjectCard({ project }) {
+  if (!project) return null
   return (
     <Link
       to={`/work/${project.slug}`}
-      className={`group flex items-center gap-6 rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) p-6 transition-colors hover:border-(--color-stroke-strong) ${
-        isPrev ? '' : 'md:flex-row-reverse md:text-right'
-      }`}
+      aria-label={`Next project: ${project.title}`}
+      className="group relative mt-6 block overflow-hidden rounded-(--radius-xl) border border-(--color-stroke) bg-(--color-void) transition-colors hover:border-(--color-stroke-strong)"
     >
-      <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) text-(--color-ink-100) transition-colors group-hover:border-(--color-cyan) group-hover:text-(--color-cyan)">
-        {isPrev ? <ArrowLeft size={16} strokeWidth={2} /> : <ArrowRight size={16} strokeWidth={2} />}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-          {isPrev ? 'Previous' : 'Next'}
+      <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[2/1] lg:aspect-[21/9]">
+        <img
+          src={project.image}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover opacity-60 transition-all duration-700 ease-out group-hover:scale-[1.04] group-hover:opacity-80"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-(--color-void) via-(--color-void)/50 to-(--color-void)/10" />
+      </div>
+
+      <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-10 lg:p-12">
+        <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-cyan)">
+          Next project
         </p>
-        <p className="mt-2 truncate font-display text-(length:--fs-h4) text-(--color-ink-100)">
-          {project.title}
+        <div className="mt-3 flex items-end justify-between gap-6">
+          <h2 className="font-display text-(length:--fs-h1) leading-[1.04] text-(--color-ink-100)">
+            {project.title}
+          </h2>
+          <span className="hidden shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) bg-(--color-void)/40 p-4 text-(--color-ink-100) backdrop-blur transition-colors group-hover:border-(--color-cyan) group-hover:text-(--color-cyan) sm:inline-flex">
+            <ArrowRight
+              size={20}
+              strokeWidth={2}
+              className="transition-transform duration-500 group-hover:translate-x-1"
+            />
+          </span>
+        </div>
+        <p className="mt-3 hidden max-w-xl text-(length:--fs-body) text-(--color-ink-60) line-clamp-2 md:block">
+          {project.summary}
         </p>
       </div>
-      <ArrowUpRight
-        size={16}
-        strokeWidth={2}
-        className="hidden text-(--color-ink-30) transition-colors group-hover:text-(--color-cyan) md:block"
-      />
     </Link>
   )
 }

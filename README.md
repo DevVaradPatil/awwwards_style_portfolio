@@ -183,6 +183,7 @@ Built in phases against [`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md).
 - README rewritten against the code as it actually stands.
 
 ### Phase 5 — Awwwards-level upgrades
+- **Content depth** (5.3): case studies end on a full-bleed visual "Next project" banner (dimmed image backdrop + big title) with a compact wrap-around previous link; About gained a data-driven "Currently" section (`src/data/now.js`) — Researching / Shipping / Building / Open to, no vanity metrics.
 - **Animated link underlines** (5.2): `.link-underline` / `.nav-underline` — a branded gradient underline that wipes in from the left on hover/focus and retracts to the right, across the header nav (lit for the active route), footer, Contact and About. Pure CSS, GPU-composited.
 - **Glass portrait card** (About): the About photo became `GlassPhotoCard` — a full-bleed portrait under a tilt-on-hover "glass" pane (cursor-tracked specular glare, reflection streak, rim light). Card ratio matched to the source (3:4) so `object-cover` fills with no crop and no gaps. Pure transforms + gradients, no `backdrop-filter`.
 - **Hero constellation** (5.1): the hero's static orb became `ParticleSphere` — a rotating aurora point-globe with a wire mesh, glow, shimmer and cursor tilt. Pure Canvas2D, ~5 kB, no dependency (chosen over Spline, whose runtime alone would have blown the JS budget).

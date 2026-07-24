@@ -1,4 +1,5 @@
 ﻿import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,6 +19,7 @@ import MagneticButton from '@/components/primitives/MagneticButton.jsx'
 import GlassPhotoCard from '@/components/primitives/GlassPhotoCard.jsx'
 import creator from '@/assets/creator.jpg'
 import { principles, contact, socials } from '@/data/socials.js'
+import { now } from '@/data/now.js'
 import { skillGroups } from '@/data/skills.js'
 import { experience } from '@/data/experience.js'
 import { education } from '@/data/education.js'
@@ -30,6 +32,7 @@ export default function About() {
   return (
     <>
       <Hero />
+      <NowSection />
       <Principles />
       <Timeline />
       <StackChips />
@@ -112,6 +115,74 @@ function Hero() {
         </div>
       </Container>
     </section>
+  )
+}
+
+/* ---------- NOW ---------- */
+function NowSection() {
+  return (
+    <section className="relative border-y border-(--color-stroke) bg-(--color-raise)/30 py-16 md:py-20">
+      <Container>
+        <div className="flex items-center gap-3">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-(--color-lime) opacity-70" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-(--color-lime)" />
+          </span>
+          <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-60)">
+            Currently
+          </p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {now.map((item, i) => (
+            <Reveal key={item.id} delay={i * 0.05}>
+              <NowCard item={item} />
+            </Reveal>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function NowCard({ item }) {
+  const inner = (
+    <>
+      <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-cyan)">
+        {item.label}
+      </p>
+      <h3 className="mt-3 font-display text-(length:--fs-h4) text-(--color-ink-100)">
+        {item.title}
+      </h3>
+      <p className="mt-2 text-(length:--fs-sm) text-(--color-ink-60)">{item.detail}</p>
+      {item.href && (
+        <span className="mt-4 inline-flex items-center gap-1.5 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-30) transition-colors group-hover:text-(--color-cyan)">
+          {item.external ? 'Visit' : 'View'}
+          <ArrowUpRight
+            size={13}
+            strokeWidth={2}
+            className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
+        </span>
+      )}
+    </>
+  )
+
+  const cls =
+    'group flex h-full flex-col rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) p-6 transition-colors hover:border-(--color-stroke-strong)'
+
+  if (!item.href) return <div className={cls}>{inner}</div>
+  if (item.external) {
+    return (
+      <a href={item.href} target="_blank" rel="noreferrer" className={cls}>
+        {inner}
+      </a>
+    )
+  }
+  return (
+    <Link to={item.href} className={cls}>
+      {inner}
+    </Link>
   )
 }
 

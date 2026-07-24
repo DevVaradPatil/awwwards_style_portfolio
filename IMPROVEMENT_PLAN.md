@@ -195,10 +195,14 @@ The bones are genuinely good (custom cursor, magnetic buttons, orb, scrub sectio
 
 ### 5.3 Content depth (what actually converts recruiters/clients)
 
-- **Case studies are the product.** Add to each: role, timeline, 2–3 metrics ("−38% load time", "500+ users"), a process section (problem → constraints → decisions → result) with 2–4 supporting images/video, and a full-bleed next-project footer with big preview image (you have prev/next logic already — make it visual).
-- Record **short screen-capture videos/GIF-webm loops** for the top 3 projects — motion in cards (muted `<video>` on hover) outperforms static screenshots dramatically.
-- **About page**: ✅ the portrait is now a photo-forward moment — [`GlassPhotoCard.jsx`](src/components/primitives/GlassPhotoCard.jsx), a full-bleed 3:4 portrait under a tilt-on-hover glass pane (cursor specular glare, reflection streak, rim light, violet drop-glow). Imperative transforms + CSS gradients only — no `backdrop-filter`, so it stays 60fps. The old treatment was `object-contain` with padding (gaps + letterboxing); the card ratio now matches the source so `object-cover` fills with no crop. Still to do: a "what I'm doing now" section.
-- Resume: `/resume.pdf` in `public/` + a "Résumé ↓" link in header/footer.
+- **Case studies are the product.** The narrative already exists (problem → approach → features → impact) plus year/tags/stack meta.
+  - ✅ **Full-bleed next-project footer**: the old twin text prev/next cards are now a big visual "Next project" banner ([`NextProjectCard` in CaseStudy.jsx](src/pages/CaseStudy.jsx)) — the next project's image as a dimmed, gradient-over-void backdrop with a large title, arrow chip, and hover scale, plus a compact wrap-around "Previous · …" link using the `.link-underline`. Verified it reads well even for the app projects whose `image` is a portrait phone screenshot (dimmed backdrop, not a hero shot).
+  - ⏸ **Role / timeline / metrics**: needs real data from you. I won't invent "500+ users" or "−38% load time" — give me honest numbers (downloads, ratings, timelines, your role) per project and I'll add optional `role`/`timeline`/`metrics` fields to `projects.js` and render them in the meta aside + a metrics strip.
+- ⏸ Record **short screen-capture videos/GIF-webm loops** for the top 3 projects — needs you to record them; then muted `<video>`-on-hover in the cards. High impact, but asset-dependent.
+- **About page**:
+  - ✅ Photo-forward moment — [`GlassPhotoCard.jsx`](src/components/primitives/GlassPhotoCard.jsx) (later reworked into a holo-foil tilt card): full-bleed 3:4 portrait, imperative transforms + gradients, no `backdrop-filter`.
+  - ✅ **"What I'm doing now" section** — [`NowSection` in About.jsx](src/pages/About.jsx), data-driven from [`src/data/now.js`](src/data/now.js): a "Currently" band with a live pulse dot and four honest cards (Researching · Shipping · Building · Open to), linking out to the research site / work / contact. No vanity metrics.
+- ⏸ Resume: `/resume.pdf` in `public/` + a "Résumé ↓" link in header/footer — **needs the PDF from you.** Drop `resume.pdf` in `public/` and I'll wire the links (I didn't add a link that would 404).
 
 ### 5.4 New content: Android apps & AI/ML research ★ (requested addition)
 
