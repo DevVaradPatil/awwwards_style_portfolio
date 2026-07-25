@@ -11,6 +11,7 @@ import codesnap from '@/assets/projects/codesnap.webp'
 import zelda from '@/assets/projects/zelda.webp'
 import app365Logo from '@/assets/apps/365/logo.png'
 import wordigoLogo from '@/assets/apps/wordigo/logo.png'
+import delhijalboardcrm from '@/assets/projects/delhijalboardcrm.webp'
 
 // Play Store screenshots — globbed and numerically sorted (1.webp, 2.webp, …).
 const sortedShots = (glob) =>
@@ -45,7 +46,7 @@ export const projects = [
     impact: 'Helps candidates tailor resumes and pass ATS filters.',
     stack: ['Next.js', 'Gemini API', 'AI/NLP'],
     image: resumeinsight,
-    links: { live: 'https://resumeinsight.vercel.app/', repo: null },
+    links: { live: 'https://resumeinsight.vercel.app/', repo: 'https://github.com/DevVaradPatil/resume-analyzer' },
     featured: true,
   },
   {
@@ -130,9 +131,45 @@ export const projects = [
     features: ['Auth', 'Music playback', 'Playlists', 'Stripe subscriptions'],
     stack: ['Next.js', 'Supabase', 'Stripe'],
     image: spotify,
-    links: { live: 'https://spotify-2-o.vercel.app/', repo: null },
+    links: { live: 'https://spotify-2-o.vercel.app/', repo: 'https://github.com/DevVaradPatil/spotify-2.O' },
     featured: true,
   },
+  {
+  slug: 'delhi-jal-board-crm',
+  title: 'Delhi Jal Board WhatsApp CRM',
+  year: 2026,
+  tags: ['Web'],
+  summary:
+    'WhatsApp-based grievance management platform enabling citizens to register, track, and manage water, sewer, and revenue complaints.',
+  description:
+    'A WhatsApp-powered CRM system for Delhi Jal Board that streamlines complaint registration, tracking, and resolution through an interactive chatbot integrated with the WhatsApp Cloud API.',
+  problem:
+    'Citizens needed a simple and accessible way to register and monitor complaints without relying on traditional web portals or lengthy call center processes.',
+  approach:
+    'Built a Node.js and Express.js backend with MongoDB and Mongoose for data management. Integrated the WhatsApp Cloud API to create an automated chatbot workflow for complaint registration, status tracking, and user interactions via REST APIs.',
+  features: [
+    'WhatsApp chatbot',
+    'Complaint registration',
+    'Complaint status tracking',
+    'Water, sewer & revenue grievance management',
+    'REST API integration',
+    'MongoDB data persistence'
+  ],
+  stack: [
+    'Node.js',
+    'Express.js',
+    'MongoDB',
+    'Mongoose',
+    'WhatsApp Cloud API',
+    'REST APIs'
+  ],
+  image: delhijalboardcrm,
+  links: {
+    live: null,
+    repo: null
+  },
+  featured: true,
+},
   {
     slug: 'think-tank-india',
     title: 'Think Tank India',
@@ -147,8 +184,8 @@ export const projects = [
     features: ['Blog & project posts', 'Modern design system', 'Clean typography'],
     stack: ['Next.js', 'Prisma', 'Shadcn UI'],
     image: thinktank,
-    links: { live: 'http://thinktankindia.vercel.app/', repo: null },
-    featured: true,
+    links: { live: 'http://thinktankindia.vercel.app/', repo: 'https://github.com/DevVaradPatil/blog-site' },
+    featured: false,
   },
   {
     slug: 'frontend-toolbox',
@@ -165,7 +202,7 @@ export const projects = [
     impact: 'A developer productivity hub for everyday CSS tasks.',
     stack: ['React', 'Vite', 'Tailwind CSS'],
     image: frontendtoolbox,
-    links: { live: 'https://frontend-toolbox-ten.vercel.app/', repo: null },
+    links: { live: 'https://frontend-toolbox-ten.vercel.app/', repo: 'https://github.com/DevVaradPatil/frontend-toolbox' },
     featured: true,
   },
   {
@@ -178,7 +215,7 @@ export const projects = [
     features: ['Product catalog', 'Cart', 'Secure payments', 'Responsive UI'],
     stack: ['MongoDB', 'Express', 'React', 'Node.js', 'Stripe'],
     image: snikrz,
-    links: { live: 'http://snikrz.web.app/', repo: null },
+    links: { live: 'http://snikrz.web.app/', repo: 'https://github.com/DevVaradPatil/snikrz_nextjs_ecommerce_site' },
   },
   {
     slug: 'bento-portfolio',
@@ -189,7 +226,7 @@ export const projects = [
     description: 'Interactive, animated bento-grid portfolio template with smooth transitions.',
     stack: ['React', 'Tailwind CSS', 'LottieFiles'],
     image: bento,
-    links: { live: 'https://varadverse.vercel.app/', repo: null },
+    links: { live: 'https://varadverse.vercel.app/', repo: 'https://github.com/DevVaradPatil/bento_portfolio' },
   },
   {
     slug: 'beaesthetic',
@@ -237,7 +274,7 @@ export const projects = [
     description: 'A snippet-sharing tool with syntax-highlighted exportable code cards.',
     stack: ['React', 'Tailwind CSS'],
     image: codesnap,
-    links: { live: null, repo: null },
+    links: { live: 'https://codesnap.web.app/', repo: null },
   },
   {
     slug: 'zelda-tribute',
@@ -248,7 +285,7 @@ export const projects = [
     description: 'Themed creative landing exploring atmospheric UI and motion.',
     stack: ['React', 'GSAP'],
     image: zelda,
-    links: { live: null, repo: null },
+    links: { live: 'https://devvaradpatil.github.io/zeldagame/', repo: 'https://github.com/DevVaradPatil/zeldagame' },
   },
 ]
 
