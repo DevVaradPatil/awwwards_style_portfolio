@@ -1,6 +1,6 @@
 # Production Guide — Varad Patil Portfolio
 
-Stack: **React 19 + Vite 8 (rolldown) + Tailwind v4 + GSAP + Framer Motion + Lenis**.
+Stack: **React 19 + Vite 8 (rolldown) + Tailwind v4 + GSAP + Lenis + CSS keyframes**.
 Hosted-anywhere static SPA. Recommended host: **Vercel** (zero-config), but works on Netlify, Cloudflare Pages, GitHub Pages, S3+CloudFront, or a plain nginx box.
 
 ---
@@ -18,10 +18,10 @@ Before you ship, verify each item.
 | 5 | Preview locally | `npm run preview` and walk every route |
 | 6 | All routes load on hard refresh (SPA fallback wired) | `/`, `/work`, `/work/<slug>`, `/about`, `/playground`, `/contact`, `/garbage-url` (must hit 404 page) |
 | 7 | EmailJS keys configured (Contact form) | `.env` |
-| 8 | Real OG image at `public/og-image.png` (1200×630) | Browse `/og-image.png` |
+| 8 | OG image exists at the path in `SITE.ogImage` (`src/data/siteMeta.js`) | Browse `/og-image.jpg` |
 | 9 | `robots.txt` and `sitemap.xml` reflect prod URL | `public/` |
 | 10 | Lighthouse: Performance ≥ 90, A11y ≥ 95, SEO ≥ 95 | Chrome DevTools → Lighthouse |
-| 11 | Bundle size sane | `dist/assets/*.js` — initial route ≤ ~200 kB gz |
+| 11 | Perf budgets pass | Enforced by `npm run build` (postbuild `scripts/check-budgets.mjs`); `npm run budget:report` for the table |
 
 ---
 
@@ -49,12 +49,12 @@ Edit these before first deploy:
 
 | File | What to change |
 |------|----------------|
-| `src/lib/useDocumentMeta.js` | `SITE.url` → your production origin (e.g. `https://varaddev.vercel.app`) |
+| `src/data/siteMeta.js` | `SITE.url` → your production origin (e.g. `https://varaddev.vercel.app`) |
+| `scripts/generate-sitemap.mjs` | `SITE` constant → same origin (sitemap is regenerated on every build) |
 | `index.html` | `<meta property="og:url">`, `<link rel="canonical">`, JSON-LD `sameAs` URLs |
-| `public/sitemap.xml` | Replace `https://varaddev.vercel.app` with your domain |
 | `public/robots.txt` | Update `Sitemap:` URL |
 | `src/data/socials.js` | Verify GitHub / LinkedIn / contact email |
-| `public/og-image.png` | Drop a real 1200×630 PNG (currently a placeholder) |
+| `public/og-image.jpg` | 1200×630-ish JPEG; keep `SITE.ogImage` pointing at it |
 | `public/favicon.svg` (or `.ico`) | Brand mark |
 
 ---
@@ -68,9 +68,11 @@ npm run build
 
 Output: `dist/` (static files, hashed). The build emits these chunks (rolldown manualChunks):
 
-- `vendor-react`, `vendor-router`, `vendor-motion`, `vendor-gsap`, `vendor-lenis`, `vendor-icons`
+- `vendor-react`, `vendor-router`, `vendor-gsap`, `vendor-lenis`, `vendor-icons`
 - `index` (app shell)
-- One lazy chunk per route page
+- One lazy chunk per route page, plus an async chunk for Vercel Analytics / Speed Insights
+
+`prebuild` regenerates `public/sitemap.xml`; `postbuild` writes a prerendered `dist/<route>/index.html` per route and fails the build if a perf budget is exceeded.
 
 Initial paint loads only what `/` needs.
 
@@ -165,7 +167,7 @@ Run these on the live URL:
 - [ ] Social preview: paste URL in https://www.opengraph.xyz and https://cards-dev.twitter.com/validator
 - [ ] Console clean — no 404s, no CSP violations, no React warnings
 - [ ] Tab through with keyboard: focus rings visible, skip-link works (`Tab` on first paint), modals trap focus, mobile menu closes on `Esc`
-- [ ] `prefers-reduced-motion: reduce` (DevTools → Rendering) — GSAP scroll reveals and orb still render statically without thrash
+- [ ] `prefers-reduced-motion: reduce` (DevTools → Rendering) — entrance/reveal animations intentionally keep playing; only `.respect-reduced-motion` elements and `Orb3D` go static
 
 ---
 
@@ -177,7 +179,7 @@ Run these on the live URL:
 | Contact form returns 400 | Template field names must match `from_name`, `reply_to`, `message` exactly. |
 | Tailwind classes "disappear" in prod | The `text-(--color-foo)` shorthand depends on `--color-*` being registered in `@theme {}` inside `src/index.css`. Don't strip it. |
 | Slow initial JS | Verify `vite.config.js` `manualChunks` still splits vendors. Check `dist/stats.html` (if you add `rollup-plugin-visualizer`). |
-| Fonts flash unstyled (FOUT) | Preconnect tags already in `index.html`. To eliminate entirely, self-host with `@font-face` + `font-display: swap`. |
+| Fonts flash unstyled (FOUT) | Fonts are self-hosted woff2 (`public/fonts/`, `src/styles/fonts.css`). Re-run `node scripts/fetch-fonts.mjs` to refresh weights. |
 | Orb 3D shape stutters on low-end devices | It auto-pauses when offscreen and respects `prefers-reduced-motion`. To dial back further, lower `SEGMENTS` in `src/components/primitives/Orb3D.jsx` from `280` to `180`. |
 | Lenis breaks anchor links inside a page | Use `lenis.scrollTo(target)` instead of native `<a href="#id">`. |
 
