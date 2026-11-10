@@ -41,17 +41,22 @@ export default function Footer() {
   return (
     <footer className="overflow-hidden bg-(--color-ink) pt-20 md:pt-28">
       <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-14">
-        <div className="grid grid-cols-1 gap-14 md:grid-cols-[1.6fr_1fr_1fr]">
-          <div>
+        {/* Tablet: the email block takes the full row (link columns below it)
+            so the address isn't squeezed small; desktop: three columns. */}
+        <div className="grid grid-cols-1 gap-14 md:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          {/* @container: the email's font size follows this column's width
+              (cqi units), so it always fits on one line instead of wrapping.
+              The address + arrow is ~18em wide, so 5.4cqi fills ~97% of it. */}
+          <div className="@container min-w-0 md:col-span-2 lg:col-span-1">
             <p className="font-display text-(length:--fs-h3) font-bold [font-stretch:115%] text-(--color-fg)">
               Have something worth building?
             </p>
             <a
               href={`mailto:${contact.email}`}
-              className="mt-4 inline-flex items-center gap-2 break-all font-display text-(length:--fs-h3) font-bold [font-stretch:115%] text-(--color-pink)"
+              className="mt-4 inline-flex items-center gap-[0.3em] whitespace-nowrap font-display text-[min(var(--fs-h3),5.4cqi)] font-bold [font-stretch:115%] text-(--color-pink)"
             >
               <span className="link-underline">{contact.email}</span>
-              <ArrowUpRight size={22} strokeWidth={2.2} className="shrink-0" />
+              <ArrowUpRight size="0.9em" strokeWidth={2.2} className="shrink-0" />
             </a>
             <a
               href={research.href}
