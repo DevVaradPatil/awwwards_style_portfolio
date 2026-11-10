@@ -151,6 +151,8 @@ p {
   --color-fg: var(--color-type);
   --color-fg-muted: var(--color-type-muted);
   --color-line: rgba(17, 17, 20, 0.14);
+  --color-line-strong: rgba(17, 17, 20, 0.32);
+  --color-error: #b3261e;
   --color-stroke: rgba(17, 17, 20, 0.12);
   --color-stroke-strong: rgba(17, 17, 20, 0.24);
 }

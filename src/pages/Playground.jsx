@@ -1,259 +1,114 @@
-import { useEffect, useRef } from 'react'
-import Section from '@/components/system/Section.jsx'
-import Reveal from '@/components/primitives/Reveal.jsx'
-import { scrubTimeline } from '@/lib/scrollHelpers.js'
-import MagneticButton from '@/components/primitives/MagneticButton.jsx'
-import TiltCard from '@/components/primitives/TiltCard.jsx'
-import Marquee from '@/components/primitives/Marquee.jsx'
-import GradientBlob from '@/components/primitives/GradientBlob.jsx'
-import SplitText from '@/components/primitives/SplitText.jsx'
-import Counter from '@/components/primitives/Counter.jsx'
-import Orb3D from '@/components/primitives/Orb3D.jsx'
+import { useId, useState } from 'react'
+import ElasticText from '@/components/primitives/ElasticText.jsx'
+import WorkRing from '@/components/primitives/WorkRing.jsx'
+import CodePortrait from '@/components/primitives/CodePortrait.jsx'
+import LiquidName from '@/components/primitives/LiquidName.jsx'
+import creator from '@/assets/creator.jpg'
 import { featuredProjects } from '@/data/projects.js'
-import { skillCloud } from '@/data/skills.js'
-import { stats } from '@/data/socials.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
 import { pageMeta } from '@/data/siteMeta.js'
 
-function Lab({ id, title, kicker, children }) {
+const wrap = 'mx-auto max-w-[1400px] px-6 md:px-10 lg:px-14'
+
+/** Motion Lab (/playground): the site's four motion pieces, standalone. */
+export default function Playground() {
+  useDocumentMeta(pageMeta.playground)
   return (
-    <section id={id} className="relative border-t border-(--color-stroke) py-20">
-      <div className="mb-10">
-        <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.35em] text-(--color-ink-30)">
-          {kicker}
+    <>
+      <section className="bg-(--color-ink) pt-28 pb-16 md:pt-36 md:pb-20">
+        <div className={wrap}>
+          <h1 className="font-normal">
+            <span className="sr-only">Motion Lab</span>
+            <ElasticText
+              text="LAB"
+              label=""
+              aria-hidden="true"
+              reach={1.3}
+              width={[70, 150]}
+              weight={[350, 900]}
+              className="text-[clamp(5rem,22vw,22rem)] text-(--color-fg)"
+            />
+          </h1>
+          <p className="mt-6 max-w-2xl text-(length:--fs-h4) leading-relaxed text-(--color-fg-muted)">
+            The motion pieces this site is built from, one at a time. Everything here is hand-written:
+            no animation libraries beyond GSAP, no 3D engine.
+          </p>
+        </div>
+      </section>
+
+      <TypeTester />
+
+      <Piece
+        title="Liquid chrome"
+        how="One WebGL fragment shader: domain-warped noise distorts a texture of the text, the pointer adds a ripple and splits the color channels."
+      >
+        <LiquidName className="h-[50svh] min-h-[320px] rounded-(--radius-lg) md:h-[64svh]" />
+      </Piece>
+
+      <Piece
+        title="Code portrait"
+        how="A real photo sampled into a grid and redrawn as colored characters on a 2D canvas. The pointer is a lens onto the original."
+      >
+        <div className="mx-auto max-w-md">
+          <CodePortrait src={creator} alt="Portrait of Varad Patil, drawn in code characters" />
+        </div>
+      </Piece>
+
+      <Piece
+        title="Work ring"
+        how="Plain CSS 3D transforms: every card is rotated around a shared axis. Drag adds momentum; the card facing you is found with a cosine."
+        bleed
+      >
+        <WorkRing projects={featuredProjects} />
+      </Piece>
+    </>
+  )
+}
+
+/** Elastic type, but you choose the word. */
+function TypeTester() {
+  const id = useId()
+  const [value, setValue] = useState('ELASTIC')
+  const shown = value.trim() ? value.toUpperCase() : 'TYPE'
+  return (
+    <section aria-label="Elastic type" className="room-blue overflow-hidden py-20 md:py-28">
+      <div className={wrap}>
+        <h2 className="text-(length:--fs-h2)">Elastic type</h2>
+        <p className="mt-3 max-w-2xl text-(--color-fg-muted)">
+          A variable font with two axes, width and weight, set per letter every frame from the pointer
+          distance. Type your own word, then move over it.
         </p>
-        <h2 className="mt-3 font-display text-(length:--fs-h2) text-(--color-ink-100)">
-          {title}
-        </h2>
+        <label htmlFor={id} className="mt-8 block text-(length:--fs-sm) font-semibold text-(--color-fg-muted)">
+          Your word
+        </label>
+        <input
+          id={id}
+          value={value}
+          maxLength={12}
+          onChange={(e) => setValue(e.target.value)}
+          className="mt-2 w-full max-w-sm border-0 border-b-2 border-(--color-line) bg-transparent px-0 py-2 font-display text-(length:--fs-h3) font-bold uppercase text-(--color-fg) outline-none focus:border-(--color-pink)"
+        />
       </div>
-      {children}
+      <ElasticText
+        as="p"
+        text={shown}
+        reach={1.3}
+        width={[55, 150]}
+        weight={[200, 900]}
+        className="mt-10 text-center text-[clamp(3.5rem,13vw,13rem)] text-(--color-fg)"
+      />
     </section>
   )
 }
 
-export default function Playground() {
-  useDocumentMeta(pageMeta.playground)
-  const scrubRef = useRef(null)
-
-  useEffect(() => {
-    const el = scrubRef.current
-    if (!el) return
-    const words = el.querySelectorAll('[data-scrub-word]')
-    const tl = scrubTimeline(el, { start: 'top 70%', end: 'bottom 50%', scrub: 0.8 })
-    tl.from(words, { opacity: 0.12, stagger: 0.05, ease: 'none' })
-    return () => tl.scrollTrigger?.kill()
-  }, [])
-
+function Piece({ title, how, bleed = false, children }) {
   return (
-    <Section as="div" className="pt-32" containerClassName="relative">
-      {/* HEADER */}
-      <div className="relative">
-        <GradientBlob
-          variant="violet"
-          size={520}
-          className="top-[-120px] right-[-80px]"
-          opacity={0.4}
-        />
-        <GradientBlob
-          variant="cyan"
-          size={420}
-          className="top-[80px] left-[-120px]"
-          opacity={0.3}
-        />
-        <p className="relative font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-60)">
-          Design System · Aurora Compute v0.1
-        </p>
-        <h1 className="relative mt-6 font-display text-(length:--fs-h1)">
-          <SplitText by="word" trigger="mount">
-            Primitives, exercised.
-          </SplitText>
-        </h1>
-        <p className="relative mt-6 max-w-2xl text-(--color-ink-60)">
-          Every primitive ships in isolation here. Every page on the site composes
-          from these — no bespoke one-offs.
-        </p>
+    <section aria-label={title} className="border-t border-(--color-line) bg-(--color-ink) py-20 md:py-28">
+      <div className={wrap}>
+        <h2 className="text-(length:--fs-h2)">{title}</h2>
+        <p className="mt-3 max-w-2xl text-(--color-fg-muted)">{how}</p>
       </div>
-
-      {/* SplitText */}
-      <Lab id="split" kicker="01 · SplitText" title="Text reveal — by char & word">
-        <div className="space-y-6">
-          <div className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-6 sm:p-10">
-            <SplitText
-              as="h3"
-              by="char"
-              trigger="mount"
-              className="font-display text-(length:--fs-h2)"
-            >
-              Code. Design. Create.
-            </SplitText>
-          </div>
-          <div className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-6 sm:p-10">
-            <SplitText
-              as="h3"
-              by="word"
-              trigger="mount"
-              className="font-display text-(length:--fs-h3) text-(--color-ink-60)"
-            >
-              Full-stack developer and AI enthusiast crafting fast, scalable, immersive products.
-            </SplitText>
-          </div>
-        </div>
-      </Lab>
-
-      {/* Reveal */}
-      <Lab id="reveal" kicker="02 · Reveal" title="Scroll-triggered reveal">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {[0, 0.1, 0.2].map((d, i) => (
-            <Reveal
-              key={i}
-              delay={d}
-              className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-8"
-            >
-              <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-                Card {i + 1}
-              </p>
-              <p className="mt-3 text-(--color-ink-100)">
-                Fades and rises into view on scroll. Delay staggers between cards.
-              </p>
-            </Reveal>
-          ))}
-        </div>
-      </Lab>
-
-      {/* MagneticButton */}
-      <Lab id="magnetic" kicker="03 · MagneticButton" title="Pointer-tracking CTAs">
-        <div className="flex flex-wrap items-center gap-5">
-          <MagneticButton variant="solid">Hire me →</MagneticButton>
-          <MagneticButton variant="ghost">See work</MagneticButton>
-          <MagneticButton variant="outline" href="mailto:varadapatil123@gmail.com">
-            Email Varad
-          </MagneticButton>
-          <MagneticButton variant="solid" to="/contact">
-            Contact route
-          </MagneticButton>
-        </div>
-      </Lab>
-
-      {/* TiltCard + featured projects */}
-      <Lab id="tilt" kicker="04 · TiltCard" title="3D tilt with glare">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {featuredProjects.map((p) => (
-            <TiltCard key={p.slug} className="h-[260px]">
-              <div className="flex h-full flex-col justify-between p-6">
-                <div>
-                  <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-cyan)">
-                    {p.tags.join(' · ')}
-                  </p>
-                  <h3 className="mt-3 font-display text-(length:--fs-h4) text-(--color-ink-100)">
-                    {p.title}
-                  </h3>
-                </div>
-                <p className="text-(length:--fs-sm) text-(--color-ink-60)">{p.summary}</p>
-              </div>
-            </TiltCard>
-          ))}
-        </div>
-      </Lab>
-
-      {/* Marquee */}
-      <Lab id="marquee" kicker="05 · Marquee" title="Seamless looping strip">
-        <div className="space-y-6">
-          <Marquee speed={70} className="border-y border-(--color-stroke) py-6">
-            {['CODE', 'DESIGN', 'CREATE', 'SHIP', 'AI', 'WEB', '3D', 'MOBILE'].map((w, i) => (
-              <span
-                key={i}
-                className="font-display text-(length:--fs-h2) text-(--color-ink-100)"
-              >
-                {w}{' '}
-                <span className="inline-block h-2 w-2 translate-y-[-0.4em] rounded-full brand-gradient-surface" />
-              </span>
-            ))}
-          </Marquee>
-          <Marquee
-            speed={45}
-            direction="right"
-            className="border-b border-(--color-stroke) py-4"
-          >
-            {skillCloud.slice(0, 14).map((s) => (
-              <span
-                key={s.label}
-                className="rounded-(--radius-pill) border border-(--color-stroke-strong) bg-(--color-elev) px-5 py-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60)"
-              >
-                {s.label}
-              </span>
-            ))}
-          </Marquee>
-        </div>
-      </Lab>
-
-      {/* GradientBlob */}
-      <Lab id="blob" kicker="06 · GradientBlob" title="Decorative aurora glows">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {['violet', 'iris', 'cyan'].map((v) => (
-            <div
-              key={v}
-              className="relative h-[240px] overflow-hidden rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise)"
-            >
-              <GradientBlob
-                variant={v}
-                size={320}
-                blur={80}
-                className="-top-12 -left-12"
-              />
-              <span className="absolute bottom-4 left-5 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-100)">
-                {v}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Lab>
-
-      {/* Counter */}
-      <Lab id="counter" kicker="07 · Counter" title="Animated numeric stats">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((s) => (
-            <div
-              key={s.id}
-              className="rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) p-8"
-            >
-              <Counter
-                value={s.value}
-                suffix={s.suffix}
-                className="font-display text-(length:--fs-h1) text-(--color-ink-100) brand-gradient-text"
-              />
-              <p className="mt-3 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-60)">
-                {s.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Lab>
-
-      {/* Orb3D */}
-      <Lab id="orb" kicker="08 · Orb3D" title="Planet-illusion sphere (CSS only)">
-        <div className="flex items-center justify-center rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-raise) py-16">
-          <Orb3D size={400} />
-        </div>
-        <p className="mt-6 max-w-2xl font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-          Lighting fixed to viewer · 200% surface texture scrolls 14s loop · ±8° mouse tilt.
-        </p>
-      </Lab>
-
-      {/* Scroll scrub helper */}
-      <Lab id="scrub" kicker="09 · scrubTimeline" title="Scroll-scrubbed text reveal">
-        <p
-          ref={scrubRef}
-          className="max-w-4xl font-display text-(length:--fs-h2) leading-[1.05] text-(--color-ink-100)"
-        >
-          {'Engineering rigor, design sensibility, AI awareness — shipped as one product.'
-            .split(' ')
-            .map((w, i) => (
-              <span key={i} data-scrub-word className="inline-block pr-[0.25em]">
-                {w}
-              </span>
-            ))}
-        </p>
-      </Lab>
-    </Section>
+      <div className={bleed ? 'mt-10' : `${wrap} mt-10`}>{children}</div>
+    </section>
   )
 }

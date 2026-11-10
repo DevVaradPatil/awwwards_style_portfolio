@@ -32,9 +32,9 @@ export const pageMeta = {
     path: '/about',
   },
   playground: {
-    title: 'Playground',
+    title: 'Motion Lab',
     description:
-      'Live demos of motion primitives, scroll-driven interactions and design tokens powering varaddev.vercel.app.',
+      'The motion pieces behind varaddev.vercel.app, standalone: elastic type, liquid chrome, a code portrait and a 3D work ring.',
     path: '/playground',
   },
   contact: {

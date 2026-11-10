@@ -55,7 +55,6 @@ const BUDGETS = {
 // a content hash. Both Play Store apps ship a `logo.png`, so that entry covers
 // the larger of the pair (365's, at 157 KiB; Wordigo's is only 15 KiB).
 const IMAGE_WAIVERS = {
-  'creator.jpg': 244 * KB, // re-export pending — see docs/IMAGE_OPTIMIZATION.md
   'logo.png': 158 * KB, //    365 app icon, shipped at Play Store resolution
 }
 
