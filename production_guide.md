@@ -167,7 +167,7 @@ Run these on the live URL:
 - [ ] Social preview: paste URL in https://www.opengraph.xyz and https://cards-dev.twitter.com/validator
 - [ ] Console clean — no 404s, no CSP violations, no React warnings
 - [ ] Tab through with keyboard: focus rings visible, skip-link works (`Tab` on first paint), modals trap focus, mobile menu closes on `Esc`
-- [ ] `prefers-reduced-motion: reduce` (DevTools → Rendering) — entrance/reveal animations intentionally keep playing; only `.respect-reduced-motion` elements and `Orb3D` go static
+- [ ] `prefers-reduced-motion: reduce` (DevTools → Rendering) — all motion intentionally keeps playing (owner's choice)
 
 ---
 
@@ -180,7 +180,7 @@ Run these on the live URL:
 | Tailwind classes "disappear" in prod | The `text-(--color-foo)` shorthand depends on `--color-*` being registered in `@theme {}` inside `src/index.css`. Don't strip it. |
 | Slow initial JS | Verify `vite.config.js` `manualChunks` still splits vendors. Check `dist/stats.html` (if you add `rollup-plugin-visualizer`). |
 | Fonts flash unstyled (FOUT) | Fonts are self-hosted woff2 (`public/fonts/`, `src/styles/fonts.css`). Re-run `node scripts/fetch-fonts.mjs` to refresh weights. |
-| Orb 3D shape stutters on low-end devices | It auto-pauses when offscreen and respects `prefers-reduced-motion`. To dial back further, lower `SEGMENTS` in `src/components/primitives/Orb3D.jsx` from `280` to `180`. |
+| Elastic type or the code portrait stutters on low-end devices | Both pause when offscreen. To dial back, lower the `width`/`weight` ranges on the heaviest `ElasticText` instances, or raise the font size `fs` in `CodePortrait.jsx` (fewer characters to draw). |
 | Lenis breaks anchor links inside a page | Use `lenis.scrollTo(target)` instead of native `<a href="#id">`. |
 
 ---

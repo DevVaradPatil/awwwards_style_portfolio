@@ -15,7 +15,7 @@ export const education = [
   },
   {
     id: 'undergrad',
-    degree: 'B.E. — Computer Engineering',
+    degree: 'B.Tech — Computer Engineering',
     school: "Rajarambapu Institute of Technology (RIT) · GDSC RIT'23 community",
     period: '2020 – 2024',
     coursework: [

@@ -1,8 +1,8 @@
 # Varad Patil — Portfolio (`varaddev.vercel.app`)
 
-An Awwwards-grade personal portfolio for **Varad Patil** — full-stack developer & AI builder, M.Tech AI for Sustainability @ IIT Kanpur. Built around the **Aurora Compute** design system: deep-space surfaces with a violet → iris → cyan accent gradient, Clash Display + Inter + JetBrains Mono.
+A motion-led personal portfolio for **Varad Patil** — full-stack developer & AI builder, M.Tech AI for Sustainability @ IIT Kanpur. Built around the **Elastic** design system: full-bleed color "rooms" (ink, electric blue, bone, pink) and elastic type — letters of the variable font **Anybody** stretch wider and heavier as the pointer comes near.
 
-> Dark, fast, motion-rich. Zero R3F, zero heavy SDKs — everything custom and tree-shaken.
+> Fast and motion-rich with no 3D engine or animation SDK: GSAP + Lenis, CSS 3D, Canvas 2D and one hand-written WebGL shader.
 
 ---
 
@@ -13,8 +13,8 @@ An Awwwards-grade personal portfolio for **Varad Patil** — full-stack develope
 | Framework | **React 19** + **Vite 8 (rolldown)** |
 | Routing | **react-router-dom 7** (lazy routes + page transitions) |
 | Styling | **Tailwind CSS v4** (all tokens in `@theme {}` inside `src/index.css`) |
-| Motion | **GSAP 3** + ScrollTrigger, **Lenis** smooth scroll, CSS keyframes |
-| Type | **Self-hosted woff2** — Clash Display · Inter · JetBrains Mono (no third-party font hosts) |
+| Motion | **GSAP 3** + ScrollTrigger, **Lenis** smooth scroll, CSS 3D, Canvas 2D, raw WebGL |
+| Type | **Self-hosted woff2** — Anybody (variable: width + weight) · Inter · JetBrains Mono |
 | Icons | **lucide-react** (tree-shaken, single shared chunk) |
 | Email | **EmailJS REST** (no SDK installed) with `mailto:` fallback |
 | SEO | Build-time sitemap + per-route prerendered `<head>` + JSON-LD |
@@ -36,19 +36,18 @@ src/
   assets/                Project screenshots, app icons, tech logos
   components/
     layout/              Header, Footer
-    primitives/          Reveal, MagneticButton, TiltCard, Marquee,
-                         GradientBlob, SplitText, Counter, Orb3D
-    system/              Container, Section, Loaders, ErrorBoundary, Preloader,
+    primitives/          ElasticText, WorkRing, CodePortrait, LiquidName,
+                         MagneticButton
+    system/              RouteLoader, ErrorBoundary, Preloader,
                          SmoothScrollProvider, PageTransition, CustomCursor,
                          Analytics, VercelBeacons
-  data/                  projects, skills, experience, education,
-                         testimonials, socials, techLogos, siteMeta
-  lib/                   scrollHelpers, emailjs, useDocumentMeta
+  data/                  projects, story, skills, experience, education,
+                         testimonials, socials, now, siteMeta
+  lib/                   emailjs, useDocumentMeta, titleLines
   pages/                 Home, Work, CaseStudy, About, Playground,
                          Contact, NotFound
   router/                AppRouter (lazy + Suspense + transitions)
-  sections/home/         Hero, IntroMarquee, AboutTeaser, FeaturedWork,
-                         SkillsCloud, ManifestoScrub, Stats, CTAFooter
+  sections/home/         Hero, Story, WorkShowcase, Toolbox, CallToAction
   styles/                cursor.css, fonts.css
   App.jsx, main.jsx, index.css
 ```
@@ -126,20 +125,20 @@ Budgets live in [`scripts/check-budgets.mjs`](scripts/check-budgets.mjs) and are
 
 | Budget | Limit | Current |
 | --- | ---: | ---: |
-| Initial `/` JS (gz) | 165 kB | **147.8 kB** |
-| Initial `/` CSS (gz) | 14 kB | **9.0 kB** |
-| Any lazy route chunk (gz) | 9 kB | **5.2 kB** (About) |
-| Any single image | 150 KiB | **2 waived** |
+| Initial `/` JS (gz) | 165 kB | **138.4 kB** |
+| Initial `/` CSS (gz) | 14 kB | **8.9 kB** |
+| Any lazy route chunk (gz) | 9 kB | **4.4 kB** (About) |
+| Any single image | 150 KiB | **1 waived** |
 
-Initial `/` breakdown (gz): `vendor-react` 55.3 · `vendor-gsap` 42.8 · `index` 25.4 · `vendor-router` 14.0 · `vendor-icons` 5.1 · `vendor-lenis` 4.9 · runtime 0.4.
+Initial `/` breakdown (gz): `vendor-react` 55.3 · `vendor-gsap` 42.8 · `index` 17.4 · `vendor-router` 14.0 · `vendor-lenis` 4.9 · `vendor-icons` 4.2 · runtime 0.4.
 
-Lazy chunks (gz): About 5.16 · Contact 3.04 · Playground 2.48 · CaseStudy 2.38 · Work 1.68 · VercelBeacons 1.69 · NotFound 0.99.
+Lazy chunks (gz): About 4.36 · Playground 3.73 · Contact 2.94 · CaseStudy 2.74 · Work 1.76 · VercelBeacons 1.74 · NotFound 0.67.
 
-Two images (`creator.jpg`, the Wordigo `logo.png`) exceed the image cap under an explicit waiver pinned to their current size — they can shrink but never grow, and the waiver list doubles as the visible to-do (see [`docs/IMAGE_OPTIMIZATION.md`](docs/IMAGE_OPTIMIZATION.md)).
+One image (the 365 app `logo.png`) exceeds the image cap under an explicit waiver pinned to its current size — it can shrink but never grow, and the waiver list doubles as the visible to-do (see [`docs/IMAGE_OPTIMIZATION.md`](docs/IMAGE_OPTIMIZATION.md)).
 
 Other standing targets:
 
-- ✅ Lighthouse Accessibility ≥ 95 — visible cyan focus ring on every interactive primitive, semantic landmarks, ARIA labels on icon-only controls, keyboard-reachable mobile nav with focus trap.
+- ✅ Lighthouse Accessibility ≥ 95 — visible pink focus ring on every interactive primitive, semantic landmarks, ARIA labels on icon-only controls, keyboard-reachable mobile nav with focus trap.
 - ✅ Every secondary route lazy-loaded behind `Suspense`.
 - ✅ Per-route `<title>` / OG / Twitter / canonical, prerendered into static HTML at build time.
 - ✅ JSON-LD `Person` on `/`, `CreativeWork` / `MobileApplication` per case study, `sitemap.xml`, `robots.txt`.
@@ -149,26 +148,33 @@ Other standing targets:
 
 ## 🎨 Design tokens (cheat sheet)
 
-| Token | Value |
-| --- | --- |
-| `--color-void` | `#08070d` |
-| `--color-elev` | `#11101a` |
-| `--color-raise` | `#1b1a27` |
-| `--color-ink-100/60/30` | `#F4F2FF / #A6A3C2 / #5A5775` |
-| `--color-violet` | `#7C5BFF` |
-| `--color-iris` | `#B07BFF` |
-| `--color-cyan` | `#5BE4FF` |
-| `--color-lime` | `#C7FF6E` |
-| `--color-rose` | `#FF6A8A` |
-| Fonts | Clash Display · Inter · JetBrains Mono |
+| Token | Value | Use |
+| --- | --- | --- |
+| `--color-ink` | `#0b0b0d` | Hero, work, case studies, footer |
+| `--color-blue` | `#2433ff` | Story, Now, next project (`.room-blue`) |
+| `--color-bone` | `#ecece8` | Reading pages (`.room-bone`) |
+| `--color-pink` | `#ff8ad0` | The one accent; closing call to action (`.room-pink`) |
+| `--color-fg` / `-muted` / `-faint` | `#f2f2ee` / `#9d9da6` / `#5d5d66` | Text on ink and blue |
+| `--color-type` / `-muted` | `#111114` / `#55555d` | Text on bone |
+| Fonts | Anybody (display, variable) · Inter (body) · JetBrains Mono (code portrait) | |
 
-Use the Tailwind v4 short syntax: `text-(length:--fs-h1)`, `bg-(--color-void)`, `rounded-(--radius-md)`.
+Use the Tailwind v4 short syntax: `text-(length:--fs-h1)`, `bg-(--color-ink)`, `rounded-(--radius-md)`; set font width with `[font-stretch:115%]`.
 
 ---
 
 ## 📓 Changelog
 
-Built in phases against [`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md).
+Built in phases against [`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md), then redesigned against [`REDESIGN_PLAN.md`](REDESIGN_PLAN.md).
+
+### Redesign — "Elastic"
+- New visual system: four color rooms (ink, electric blue, bone, pink) replace the dark violet/cyan "Aurora Compute" look; Anybody variable font replaces Clash Display.
+- **ElasticText**: per-letter width/weight driven by the pointer, one shared animation loop. Used for every big headline, the preloader and the footer name.
+- **Home** tells a story: elastic hero → four pinned chapters (`src/data/story.js`) → 3D work ring → scroll-stretching toolbox → LET'S TALK.
+- **WorkRing** (CSS 3D) on Home and Work; Work adds an index list with hover previews.
+- **Case studies** with fitted elastic titles, screenshot strips for apps, next-project link.
+- **About** with **CodePortrait** (photo drawn in code characters, pointer lens), **Contact** restyle, **Motion Lab** with a raw-WebGL liquid chrome name, elastic 404.
+- Fixes: garbled "Â·" characters on About; contact form now focuses the first invalid field; portrait image 244 kB → 42 kB.
+- New share image, favicon and app icons; 13 unused components removed.
 
 ### Phase 3.3 — Head/meta polish (backlog closeout)
 - `apple-touch-icon` (180×180) + `icon-192` / `icon-512` + `site.webmanifest`, all rendered from `favicon.svg` onto the void surface.
@@ -218,7 +224,7 @@ Built in phases against [`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md).
 
 ## 🙌 Credits
 
-- Type — **Fontshare** (Clash Display), **Google Fonts** (Inter, JetBrains Mono) — both self-hosted
+- Type — **Google Fonts** (Anybody, Inter, JetBrains Mono) — self-hosted
 - Icons — **lucide-react**
 - Motion — **GSAP**, **Lenis**
 - Tooling — **Vite (rolldown)**, **Tailwind v4**

@@ -31,22 +31,6 @@
   --color-line-strong: rgba(242, 242, 238, 0.24);
   --color-error: #ff5c5c;
 
-  /* Legacy aliases — keep un-migrated pages rendering in the new palette.
-     Removed in Phase 5 once every page uses the names above. */
-  --color-void: #0b0b0d;
-  --color-raise: #141417;
-  --color-elev: #1c1c21;
-  --color-ink-100: #f2f2ee;
-  --color-ink-60: #9d9da6;
-  --color-ink-30: #5d5d66;
-  --color-violet: #2433ff;
-  --color-iris: #ff8ad0;
-  --color-cyan: #ff8ad0;
-  --color-lime: #ff8ad0;
-  --color-rose: #ff5c5c;
-  --color-stroke: rgba(242, 242, 238, 0.1);
-  --color-stroke-strong: rgba(242, 242, 238, 0.2);
-
   /* Fonts — Anybody is variable on two axes (wdth 50–150, wght 100–900);
      elastic type animates both. */
   --font-display: "Anybody", "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -54,22 +38,17 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* Fluid type scale */
-  --fs-giant: clamp(4.5rem, 17vw, 17rem);
-  --fs-display: clamp(3rem, 7.5vw, 7.5rem);
   --fs-h1: clamp(2.25rem, 5vw, 4.75rem);
   --fs-h2: clamp(1.75rem, 3.4vw, 3rem);
   --fs-h3: clamp(1.3rem, 2.1vw, 1.85rem);
   --fs-h4: clamp(1.05rem, 1.4vw, 1.375rem);
   --fs-body: clamp(0.98rem, 1.05vw, 1.08rem);
   --fs-sm: 0.875rem;
-  --fs-xs: 0.75rem;
 
-  /* Radii — small and square-ish; no pills in the new system. */
+  /* Radii — small and square-ish; no pills in this system. */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-pill: 999px;
 
   /* Easings */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -105,9 +84,9 @@ body {
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   line-height: 1.55;
-  /* Contain off-edge decorative bleed (GradientBlobs) so mobile can't be
-     side-panned. Kept on BODY only — putting overflow on <html> breaks
-     GSAP ScrollTrigger's scroller detection (scroll-reveal stops firing). */
+  /* Contain off-edge bleed (wide elastic type, the 3D ring) so mobile can't
+     be side-panned. Kept on BODY only — putting overflow on <html> breaks
+     GSAP ScrollTrigger's scroller detection (pins and triggers stop firing). */
   overflow-x: hidden;
 }
 
@@ -140,21 +119,16 @@ p {
   color: var(--color-fg-muted);
 }
 
-/* Bone "room": dark type on the light surface. Children that use the legacy
-   ink-* text tokens follow automatically because they're re-pointed here. */
+/* Rooms: each re-points the text/line tokens for its surface, so shared
+   components (buttons, ElasticText, links) read correctly in every room. */
 .room-bone {
   background-color: var(--color-bone);
   color: var(--color-type);
-  --color-ink-100: var(--color-type);
-  --color-ink-60: var(--color-type-muted);
-  --color-ink-30: var(--color-type-muted);
   --color-fg: var(--color-type);
   --color-fg-muted: var(--color-type-muted);
   --color-line: rgba(17, 17, 20, 0.14);
   --color-line-strong: rgba(17, 17, 20, 0.32);
   --color-error: #b3261e;
-  --color-stroke: rgba(17, 17, 20, 0.12);
-  --color-stroke-strong: rgba(17, 17, 20, 0.24);
 }
 
 .room-blue {
@@ -226,20 +200,6 @@ canvas {
   max-width: 100%;
 }
 
-/* ---------------------------------------------------------------
-   Brand gradient text — WebKit clip-fix bundled in
-   --------------------------------------------------------------- */
-.brand-gradient-text {
-  /* Legacy class name (removed in Phase 5): the new system has no gradient
-     text, so it is simply the accent color now. */
-  color: var(--color-pink);
-  display: inline-block;
-  overflow-wrap: anywhere;
-}
-
-.brand-gradient-surface {
-  background: var(--color-pink);
-}
 }
 
 /* ---------------------------------------------------------------
@@ -256,7 +216,7 @@ canvas {
 }
 
 /* ---------------------------------------------------------------
-   Animated link underline (Phase 5.2 interaction polish)
+   Animated link underline
 
    A currentColor underline that wipes in from the LEFT on
    hover/focus and retracts to the RIGHT on leave — the origin swap is
@@ -264,8 +224,8 @@ canvas {
 
      .link-underline — inline text links; the rule spans the text box,
                        so wrap just the label when a link also has an icon.
-     .nav-underline  — padded header nav items (inset to match px-4) that
-                       ALSO stay lit for the active route via aria-current.
+     .nav-underline  — nav items and filter buttons; ALSO stay lit for the
+                       active route (aria-current) or pressed filter (aria-pressed).
 
    Pure CSS transform on a pseudo-element: GPU-composited, no layout,
    no JS. Not reduced-motion gated — it only moves on user hover/focus.
@@ -293,11 +253,11 @@ canvas {
   right: 0;
 }
 
-/* Inset to sit under the label, not the pill padding (px-4 = 1rem). */
 .nav-underline::after {
-  left: 1rem;
-  right: 1rem;
-  bottom: 0.4rem;
+  left: 0;
+  right: 0;
+  bottom: 0.15rem;
+  height: 2px;
 }
 
 .link-underline:hover::after,
@@ -319,11 +279,11 @@ canvas {
   left: 1rem;
   z-index: 9999;
   padding: 0.75rem 1.25rem;
-  background: var(--color-elev);
-  color: var(--color-ink-100);
-  border: 1px solid var(--color-stroke-strong);
-  border-radius: var(--radius-md);
-  font-family: var(--font-mono);
+  background: var(--color-pink);
+  color: var(--color-ink);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: var(--fs-sm);
   transition: top 0.2s var(--ease-out-expo);
 }
@@ -333,21 +293,7 @@ canvas {
 }
 
 /* ---------------------------------------------------------------
-   Opt-in reduced motion — apply ONLY to elements that wear .respect-reduced-motion
-   --------------------------------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
-  .respect-reduced-motion,
-  .respect-reduced-motion *,
-  .respect-reduced-motion *::before,
-  .respect-reduced-motion *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-
-/* ---------------------------------------------------------------
-   Route enter transition (replaces Framer PageTransition on the eager path)
+   Route enter transition (PageTransition)
    --------------------------------------------------------------- */
 @keyframes pageEnter {
   from {
@@ -364,16 +310,14 @@ canvas {
    `both` retains the final keyframe forever, leaving transform: translateY(0)
    on this wrapper. Any transform (even a zero one) creates a containing block
    for position:fixed descendants — which silently breaks GSAP ScrollTrigger's
-   pin (it pins via position:fixed). That threw the pinned Manifesto section
-   off-screen and left ~180vh of blank scroll. `backwards` gives the identical
-   visual but drops all animated styles once the animation ends. */
+   pin (it pins via position:fixed), throwing the pinned Home story off-screen
+   and leaving screens of blank scroll. `backwards` gives the identical visual
+   but drops all animated styles once the animation ends. */
 .page-enter {
   animation: pageEnter 0.55s var(--ease-out-expo) backwards;
 }
 
-/* Card/item entrance — used by filtered grids & the testimonial carousel
-   (replaces Framer's per-item enter animation). Stagger via inline
-   animation-delay; replay by re-keying the container. */
+/* Item entrance — used by the testimonial carousel. Replay by re-keying. */
 @keyframes cardEnter {
   from {
     opacity: 0;
@@ -390,8 +334,8 @@ canvas {
   animation: cardEnter 0.45s var(--ease-out-expo) backwards;
 }
 
-/* Mobile nav drop-in (replaces Framer's AnimatePresence). Mounted only while
-   open, so this plays on open; close is an instant unmount. */
+/* Mobile menu entrance. Mounted only while open, so this plays on open;
+   close is an instant unmount. */
 @keyframes menuDrop {
   from {
     opacity: 0;
@@ -409,33 +353,8 @@ canvas {
 }
 
 /* ---------------------------------------------------------------
-   Reveal — scroll entrance for <Reveal> (components/primitives/Reveal.jsx).
-
-   The hidden state is applied by JS in useLayoutEffect (before first paint),
-   NOT by a static CSS rule. That ordering matters: it means content can never
-   paint visible and then blink out, and if JS never runs the content simply
-   stays visible instead of being stuck permanently blank.
+   RouteLoader: a short pink bar sweeping across a hairline track.
    --------------------------------------------------------------- */
-[data-reveal] {
-  transition:
-    opacity var(--reveal-duration, 1.1s) var(--ease-out-expo) var(--reveal-delay, 0s),
-    transform var(--reveal-duration, 1.1s) var(--ease-out-expo) var(--reveal-delay, 0s);
-}
-
-[data-reveal="out"] {
-  opacity: 0;
-  transform: translateY(var(--reveal-y, 20px));
-}
-
-[data-reveal="in"] {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---------------------------------------------------------------
-   Loader keyframes
-   --------------------------------------------------------------- */
-/* RouteLoader: a short pink bar sweeping across a hairline track. */
 .route-loader {
   position: relative;
   width: min(220px, 50vw);

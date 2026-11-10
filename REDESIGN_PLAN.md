@@ -1,6 +1,6 @@
 # REDESIGN_PLAN.md — "Elastic"
 
-Status: **approved — building phase by phase.** Decisions: hero is pure elastic type (no liquid); story chapters as drafted; palette chosen below.
+Status: **complete — all phases built and committed on the local `redesign` branch (not pushed).** Decisions: hero is pure elastic type (no liquid); story chapters as drafted; palette chosen below.
 
 A full restyle of the portfolio around the motion studies, with elastic type and the 3D work ring as the two signatures. Routes, content data, SEO, the contact form and the build pipeline stay as they are; everything visual is replaced.
 

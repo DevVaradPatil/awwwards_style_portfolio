@@ -177,7 +177,7 @@
 - **M.Tech — Artificial Intelligence for Sustainability**
   Indian Institute of Technology Kanpur (IIT Kanpur) · *Jul 2025 – Present*
   Coursework: Machine Learning, Deep Learning, Data Analytics, AI‑driven Decision Systems, Sustainability & Resource Optimization, Research Methodology.
-- **Undergraduate (B.E./B.Tech)** — Engineering background (associated with **GDSC RIT'23** community), prior to IIT Kanpur M.Tech.
+- **B.Tech — Computer Engineering** — Rajarambapu Institute of Technology (RIT) (associated with **GDSC RIT'23** community), prior to IIT Kanpur M.Tech.
 
 ---
 

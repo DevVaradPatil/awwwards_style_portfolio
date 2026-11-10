@@ -48,19 +48,14 @@ export default class ErrorBoundary extends Component {
         role="alert"
         className="flex min-h-[70vh] w-full flex-col items-center justify-center px-6 text-center"
       >
-        <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-30)">
-          Aurora Compute · Error
-        </p>
-        <h1 className="mt-6 font-display text-(length:--fs-h2) text-(--color-ink-100)">
-          Something broke on the way in.
-        </h1>
-        <p className="mt-4 max-w-md text-(length:--fs-sm) text-(--color-ink-60)">
+        <h1 className="text-(length:--fs-h1) text-(--color-fg)">Something broke on the way in.</h1>
+        <p className="mt-4 max-w-md text-(--color-fg-muted)">
           A part of the page failed to load. A quick reload usually sorts it out.
         </p>
         <button
           type="button"
           onClick={this.handleReload}
-          className="mt-8 rounded-(--radius-pill) border border-(--color-stroke-strong) bg-(--color-elev) px-6 py-3 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-100) transition-colors hover:border-(--color-cyan) hover:text-(--color-cyan)"
+          className="mt-8 rounded-(--radius-sm) bg-(--color-pink) px-6 py-3.5 font-display text-(length:--fs-sm) font-bold [font-stretch:118%] text-(--color-ink) transition-colors hover:bg-(--color-fg)"
         >
           Reload page
         </button>
