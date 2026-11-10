@@ -487,3 +487,43 @@ canvas {
     clip-path: inset(0 0 100% 0);
   }
 }
+
+/* ---------------------------------------------------------------
+   Home story chapters (sections/home/Story.jsx)
+
+   Desktop: chapters stack in the pinned screen and only the active one shows.
+   They transform THEMSELVES — never put a transform on the pinned section or
+   anything above it, or the position:fixed pin breaks.
+   --------------------------------------------------------------- */
+@layer components {
+  @media (min-width: 768px) {
+    .story-chapter {
+      position: absolute;
+      inset: 0;
+      padding-inline: inherit;
+      padding-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(56px);
+      pointer-events: none;
+      transition:
+        opacity 0.5s var(--ease-out-expo),
+        transform 0.8s var(--ease-out-expo);
+    }
+
+    .story-chapter[data-active="true"] {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+  }
+}
+
+/* Home toolbox rows (sections/home/Toolbox.jsx): width and weight follow the
+   section's scroll-speed variable --v (0 at rest, 1 at full speed). */
+@layer components {
+  .toolbox-row {
+    font-variation-settings:
+      "wdth" calc(78 + var(--v, 0) * 72),
+      "wght" calc(520 + var(--v, 0) * 380);
+  }
+}
