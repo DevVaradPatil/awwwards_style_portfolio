@@ -34,10 +34,16 @@ export default function About() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-(--color-ink) pt-28 pb-20 md:pt-36 md:pb-28">
-      <div className={`${wrap} grid items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-20`}>
-        <div className="order-2 lg:order-1">
+      {/* minmax(0, 1fr) tracks: the columns stay exactly half each. Plain `fr`
+          tracks grow with their content, so a stretching HELLO would squeeze
+          the portrait column. */}
+      <div className={`${wrap} grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20`}>
+        <div className="order-2 min-w-0 lg:order-1">
           <h1 className="font-normal">
             <span className="sr-only">About Varad Patil</span>
+            {/* On desktop the size is capped so the stretch stays inside the
+                left half: the worst pointer position makes the word ~4.9em
+                wide; checked at 1024, 1440 and 1920px against the column. */}
             <ElasticText
               text="HELLO."
               label=""
@@ -45,7 +51,7 @@ function Hero() {
               reach={1.3}
               width={[70, 150]}
               weight={[350, 900]}
-              className="text-[clamp(4.5rem,15vw,13rem)] text-(--color-fg)"
+              className="text-[clamp(4.5rem,15vw,13rem)] text-(--color-fg) lg:text-[min(8vw,7.6rem)]"
             />
           </h1>
           <div className="mt-8 grid max-w-xl gap-5">
