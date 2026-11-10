@@ -2,11 +2,12 @@
 //
 // Downloads the woff2 files for the three site typefaces and writes
 // src/styles/fonts.css with local @font-face declarations, so the site no
-// longer depends on Google Fonts / Fontshare at runtime. Re-run with
+// longer depends on Google Fonts at runtime. Re-run with
 // `node scripts/fetch-fonts.mjs` to refresh (e.g. new weights).
 //
-// Google faces are subsetted (we keep latin + latin-ext; unicode-range gates
-// the rest away). Fontshare serves the full face per weight.
+// Faces are subsetted (we keep latin + latin-ext; unicode-range gates the rest
+// away). Anybody is fetched as ONE variable file per subset (width 50–150,
+// weight 100–900) — the elastic type animates both axes at runtime.
 
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -39,12 +40,12 @@ async function download(url, filePath) {
   return buf.length
 }
 
-const faces = [] // { family, weight, file, unicodeRange }
+const faces = [] // { family, weight, stretch, file, unicodeRange }
 
-// --- Google (Inter + JetBrains Mono): subsetted, carries unicode-range -------
+// --- Google: subsetted, carries unicode-range -------------------------------
 async function vendorGoogle() {
   const css = await getText(
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
+    'https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
   )
   // Each block is preceded by a `/* subset */` comment.
   const re = /\/\*\s*([\w-]+)\s*\*\/\s*@font-face\s*{([^}]*)}/g
@@ -54,41 +55,22 @@ async function vendorGoogle() {
     if (!KEEP_SUBSETS.has(subset)) continue
     const body = m[2]
     const family = body.match(/font-family:\s*'([^']+)'/)?.[1]
-    const weight = body.match(/font-weight:\s*(\d+)/)?.[1]
+    // Variable faces report a range ("100 900"); static ones a single value.
+    const weight = body.match(/font-weight:\s*([\d ]+);/)?.[1]?.trim()
+    const stretch = body.match(/font-stretch:\s*([\d% ]+);/)?.[1]?.trim()
     const url = body.match(/url\((https:[^)]+\.woff2)\)/)?.[1]
     const unicodeRange = body.match(/unicode-range:\s*([^;]+);/)?.[1]?.trim()
     if (!family || !weight || !url) continue
-    const file = `${slug(family)}-${weight}-${subsetTag(subset)}.woff2`
+    const variable = weight.includes(' ')
+    const file = `${slug(family)}-${variable ? 'var' : weight}-${subsetTag(subset)}.woff2`
     const bytes = await download(url, resolve(FONT_DIR, file))
-    faces.push({ family, weight, file, unicodeRange })
+    faces.push({ family, weight, stretch, file, unicodeRange })
     console.log(`  ${file}  (${(bytes / 1024).toFixed(1)} kB)`)
   }
 }
 
-// --- Fontshare (Clash Display): full face per weight, no unicode-range -------
-async function vendorFontshare() {
-  const css = await getText(
-    'https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap',
-  )
-  const re = /@font-face\s*{([^}]*)}/g
-  let m
-  while ((m = re.exec(css))) {
-    const body = m[1]
-    const family = body.match(/font-family:\s*'([^']+)'/)?.[1]
-    const weight = body.match(/font-weight:\s*(\d+)/)?.[1]
-    const url = body.match(/url\(['"]?(\/\/[^)'"]+\.woff2)['"]?\)/)?.[1]
-    if (!family || !weight || !url) continue
-    const file = `${slug(family)}-${weight}.woff2`
-    const bytes = await download(url, resolve(FONT_DIR, file))
-    faces.push({ family, weight, file })
-    console.log(`  ${file}  (${(bytes / 1024).toFixed(1)} kB)`)
-  }
-}
-
-console.log('Vendoring Google faces (Inter, JetBrains Mono)…')
+console.log('Vendoring Google faces (Anybody, Inter, JetBrains Mono)…')
 await vendorGoogle()
-console.log('Vendoring Fontshare face (Clash Display)…')
-await vendorFontshare()
 
 // --- Emit fonts.css ----------------------------------------------------------
 const cssOut =
@@ -100,6 +82,7 @@ const cssOut =
         `  font-family: '${f.family}';\n` +
         `  font-style: normal;\n` +
         `  font-weight: ${f.weight};\n` +
+        (f.stretch ? `  font-stretch: ${f.stretch};\n` : '') +
         `  font-display: swap;\n` +
         `  src: url('/fonts/${f.file}') format('woff2');\n` +
         (f.unicodeRange ? `  unicode-range: ${f.unicodeRange};\n` : '') +

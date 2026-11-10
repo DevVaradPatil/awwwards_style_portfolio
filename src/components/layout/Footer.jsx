@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, Download, FlaskConical } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import ElasticText from '@/components/primitives/ElasticText.jsx'
 import { contact, socials, research } from '@/data/socials.js'
 
 const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/work', label: 'Work' },
   { to: '/about', label: 'About' },
-  { to: '/playground', label: 'Playground' },
+  { to: '/playground', label: 'Lab' },
   { to: '/contact', label: 'Contact' },
 ]
 
@@ -29,127 +30,88 @@ function LocalTime() {
     return () => clearInterval(id)
   }, [])
   if (!now) return null
-  return (
-    <span className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-      Kanpur, IN · {now} IST
-    </span>
-  )
+  return <span className="tabular-nums">Kanpur, IN · {now} IST</span>
 }
+
+const linkCls =
+  'link-underline font-display text-(length:--fs-h4) font-semibold [font-stretch:112%] text-(--color-fg) transition-colors hover:text-(--color-pink)'
 
 export default function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="border-t border-(--color-stroke) bg-(--color-void) py-16">
+    <footer className="overflow-hidden bg-(--color-ink) pt-20 md:pt-28">
       <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-14">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
-          {/* Brand + tagline */}
+        <div className="grid grid-cols-1 gap-14 md:grid-cols-[1.6fr_1fr_1fr]">
           <div>
-            <Link
-              to="/"
-              aria-label="Varad Patil — Home"
-              className="inline-flex items-center gap-2 font-display text-(length:--fs-h3)"
-            >
-              <span aria-hidden="true" className="inline-block h-3 w-3 rounded-full brand-gradient-surface" />
-              <span>Varad Patil</span>
-            </Link>
-            <p className="mt-5 max-w-md text-(length:--fs-sm) text-(--color-ink-60)">
-              Full-stack developer &amp; AI enthusiast. Building fast, scalable,
-              visually engaging products from IIT Kanpur.
+            <p className="font-display text-(length:--fs-h3) font-bold [font-stretch:115%] text-(--color-fg)">
+              Have something worth building?
             </p>
             <a
               href={`mailto:${contact.email}`}
-              className="mt-6 inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-100) transition-colors hover:text-(--color-cyan)"
+              className="mt-4 inline-flex items-center gap-2 break-all font-display text-(length:--fs-h3) font-bold [font-stretch:115%] text-(--color-pink)"
             >
               <span className="link-underline">{contact.email}</span>
-              <ArrowUpRight size={14} strokeWidth={2} />
+              <ArrowUpRight size={22} strokeWidth={2.2} className="shrink-0" />
             </a>
-
-            {/* Research callout */}
             <a
               href={research.href}
               target="_blank"
               rel="noreferrer"
-              className="group mt-8 flex max-w-md items-center gap-4 rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) p-4 transition-colors hover:border-(--color-cyan)/40"
+              className="group mt-10 flex max-w-md items-baseline justify-between gap-4 border-t border-(--color-line) pt-4 text-(--color-fg-muted) transition-colors hover:text-(--color-fg)"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) text-(--color-cyan)">
-                <FlaskConical size={16} strokeWidth={1.8} />
+              <span>
+                {research.label} <span className="text-(--color-fg-faint)">· {research.org}</span>
               </span>
-              <span className="min-w-0">
-                <span className="block font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-30)">
-                  {research.org}
-                </span>
-                <span className="mt-1 flex items-center gap-1.5 font-display text-(length:--fs-h4) text-(--color-ink-100)">
-                  {research.label}
-                  <ArrowUpRight
-                    size={16}
-                    strokeWidth={2}
-                    className="text-(--color-ink-60) transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-(--color-cyan)"
-                  />
-                </span>
-              </span>
+              <ArrowUpRight size={16} strokeWidth={2} className="shrink-0" />
             </a>
           </div>
 
-          {/* Sitemap */}
           <nav aria-label="Footer navigation">
-            <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-              Sitemap
-            </p>
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-2">
               {navLinks.map((l) => (
                 <li key={l.to}>
-                  <Link
-                    to={l.to}
-                    className="link-underline inline-block font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
-                  >
+                  <Link to={l.to} className={linkCls}>
                     {l.label}
                   </Link>
                 </li>
               ))}
               <li>
-                <a
-                  href="/resume.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
-                >
-                  <span className="link-underline">Résumé</span>
-                  <Download size={12} strokeWidth={2} />
+                <a href="/resume.pdf" target="_blank" rel="noreferrer" className={linkCls}>
+                  Résumé
                 </a>
               </li>
             </ul>
           </nav>
 
-          {/* Socials */}
-          <div>
-            <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-              Elsewhere
-            </p>
-            <ul className="mt-5 space-y-3">
-              {socials.map((s) => (
-                <li key={s.id}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-60) transition-colors hover:text-(--color-ink-100)"
-                  >
-                    <span className="link-underline">{s.label}</span>
-                    <ArrowUpRight size={12} strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="space-y-2">
+            {socials.map((s) => (
+              <li key={s.id}>
+                <a href={s.href} target="_blank" rel="noreferrer" className={linkCls}>
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-(--color-stroke) pt-8 md:flex-row md:items-center">
-          <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-60)">
-            © {year} Varad Patil · All rights reserved
-          </p>
+        <div className="mt-20 flex flex-col justify-between gap-2 border-t border-(--color-line) pt-6 text-(length:--fs-sm) text-(--color-fg-muted) sm:flex-row">
+          <p className="text-(--color-fg-muted)">© {year} Varad Patil</p>
           <LocalTime />
         </div>
       </div>
+
+      {/* Signature: the name, edge to edge. Decorative — the brand is already
+          named above and in the header, so screen readers skip it. */}
+      <ElasticText
+        text="VARAD PATIL"
+        label=""
+        aria-hidden="true"
+        idle="wave"
+        reach={1.1}
+        width={[72, 132]}
+        weight={[400, 900]}
+        className="mt-8 select-none text-center text-[clamp(3rem,12.4vw,12.5rem)] text-(--color-fg) md:mt-12"
+      />
     </footer>
   )
 }

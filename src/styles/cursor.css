@@ -3,6 +3,9 @@
   cursor: none !important;
 }
 
+/* A white blob with mix-blend-mode: difference — it inverts whatever is under
+   it, so it reads on all four rooms (ink, blue, bone, pink) without per-room
+   colors. */
 .aurora-cursor {
   position: fixed;
   top: 0;
@@ -15,11 +18,11 @@
 }
 
 .aurora-cursor--dot {
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  margin-top: -3px;
-  background: #f4f2ff;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  margin-top: -4px;
+  background: #fff;
   transition:
     width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     height 0.2s cubic-bezier(0.16, 1, 0.3, 1),
@@ -27,27 +30,26 @@
 }
 
 .aurora-cursor--ring {
-  width: 36px;
-  height: 36px;
-  margin-left: -18px;
-  margin-top: -18px;
-  border: 1px solid rgba(244, 242, 255, 0.6);
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  margin-top: -17px;
+  border: 1.5px solid #fff;
   transition:
-    width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.2s linear,
+    width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 0.3s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.2s linear,
     background-color 0.2s linear;
 }
 
-/* Hover-target states (set imperatively via classList) */
+/* Over links: the ring fills into a solid inverting disc. */
 .aurora-cursor--ring.is-link {
-  width: 64px;
-  height: 64px;
-  margin-left: -32px;
-  margin-top: -32px;
-  border-color: rgba(91, 228, 255, 0.9);
-  background-color: rgba(91, 228, 255, 0.08);
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  margin-top: -36px;
+  background-color: #fff;
 }
 
 .aurora-cursor--dot.is-link {
@@ -59,24 +61,24 @@
   opacity: 0;
 }
 
-/* Context label — a pill that trails the cursor over elements carrying
-   data-cursor-label (e.g. project cards). Not blended, so it stays legible. */
+/* Context label over elements carrying data-cursor-label (e.g. project cards).
+   Not blended, so it stays legible. */
 .aurora-cursor--label {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9998;
   pointer-events: none;
-  margin-top: 22px;
-  margin-left: 22px;
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-cyan);
-  color: var(--color-void);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+  margin-top: 24px;
+  margin-left: 24px;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-pink);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  font-stretch: 125%;
   white-space: nowrap;
   opacity: 0;
   transform-origin: top left;

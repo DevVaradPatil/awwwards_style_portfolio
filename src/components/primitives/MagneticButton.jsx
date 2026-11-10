@@ -12,7 +12,7 @@ export default function MagneticButton({
   onClick,
   children,
   className = '',
-  variant = 'solid', // solid | ghost | outline
+  variant = 'solid', // solid (pink) | ink (for pink rooms) | ghost | outline
   strength = 0.35,
   ...rest
 }) {
@@ -38,24 +38,30 @@ export default function MagneticButton({
   }
 
   // Inline color guarantees the right contrast — bypasses any text-(...) parse ambiguity
+  // Colors come from the room's tokens (--color-fg is re-pointed on bone/pink
+  // rooms), so ghost/outline read correctly on every background.
   const variants = {
     solid: {
-      cls: 'bg-(--color-ink-100) hover:bg-(--color-cyan) border border-transparent',
-      style: { color: 'var(--color-void)' },
+      cls: 'bg-(--color-pink) hover:bg-(--color-fg) border-2 border-transparent',
+      style: { color: 'var(--color-ink)' },
+    },
+    ink: {
+      cls: 'bg-(--color-ink) hover:bg-(--color-blue) border-2 border-transparent',
+      style: { color: '#f2f2ee' },
     },
     ghost: {
-      cls: 'bg-(--color-elev) hover:bg-(--color-raise) border border-(--color-stroke-strong)',
-      style: { color: 'var(--color-ink-100)' },
+      cls: 'border-2 border-current hover:bg-(--color-fg)/10',
+      style: { color: 'var(--color-fg)' },
     },
     outline: {
-      cls: 'border border-(--color-stroke-strong) hover:border-(--color-cyan) hover:text-(--color-cyan)',
-      style: { color: 'var(--color-ink-100)' },
+      cls: 'border-2 border-current hover:bg-(--color-fg)/10',
+      style: { color: 'var(--color-fg)' },
     },
   }
   const chosen = variants[variant] ?? variants.solid
 
   const base =
-    'relative inline-flex items-center justify-center gap-2 rounded-(--radius-pill) px-7 py-3.5 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] transition-colors will-change-transform'
+    'relative inline-flex items-center justify-center gap-2 rounded-(--radius-sm) px-6 py-3.5 font-display text-(length:--fs-sm) font-bold [font-stretch:118%] tracking-[0.01em] transition-colors will-change-transform'
 
   const classes = `${base} ${chosen.cls} ${className}`
 

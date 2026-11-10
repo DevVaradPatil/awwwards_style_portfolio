@@ -1,12 +1,11 @@
 import { useLayoutEffect, useState } from 'react'
-import BrandedLoader from '@/components/system/BrandedLoader.jsx'
 
 /**
- * Preloader — the site's entry moment (Phase 5.1 signature moment).
+ * Preloader — the site's entry moment.
  *
- * A ~1.1s branded intro: the aurora orb + a JetBrains-Mono percentage counter
- * (BrandedLoader, previously unused, finally earns its keep), then a clip-path
- * curtain wipe up into the hero.
+ * "VARAD" in the variable display face stretches from narrow-and-light to
+ * wide-and-heavy as a counter runs 0 → 100, then a curtain wipe lifts into
+ * the page. Each letter lags the one before it, so the stretch ripples.
  *
  * Design guarantees, in priority order:
  *  1. It NEVER traps the user. Completion is driven by time-based timers
@@ -18,17 +17,14 @@ import BrandedLoader from '@/components/system/BrandedLoader.jsx'
  *     paint, so refreshes and in-session navigation stay instant.
  *  3. It is a SIBLING overlay, not a wrapper. It must never wrap the routed
  *     page — a lingering transform on an ancestor of the page creates a
- *     containing block that breaks GSAP ScrollTrigger's position:fixed pins
- *     (see the Manifesto-blackout history). As its own fixed sibling that
- *     unmounts, its curtain transform touches nothing else.
- *  4. NOT gated on prefers-reduced-motion. The owner browses with reduce-motion
- *     on; gating motion there once blanked the whole site. The intro is brief
- *     and self-dismissing, so it runs for everyone.
+ *     containing block that breaks GSAP ScrollTrigger's position:fixed pins.
+ *  4. NOT gated on prefers-reduced-motion (owner's choice — see CLAUDE.md).
  */
 
 const INTRO_KEY = 'varad:intro-seen'
-const COUNT_MS = 1100 // 0 → 100 counter
+const COUNT_MS = 1300 // 0 → 100 counter
 const REVEAL_MS = 750 // curtain wipe (keep in sync with .intro--leaving in index.css)
+const WORD = 'VARAD'
 
 function alreadySeen() {
   try {
@@ -38,6 +34,9 @@ function alreadySeen() {
     return false
   }
 }
+
+const clamp01 = (v) => Math.max(0, Math.min(1, v))
+const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 
 export default function Preloader() {
   // Decided synchronously, pre-paint, so a repeat visit renders nothing at all.
@@ -49,8 +48,6 @@ export default function Preloader() {
   // phase change would fire its cleanup (written for unmount) mid-intro, which
   // would clear the pending finish timer and unlock scroll before the wipe ends.
   useLayoutEffect(() => {
-    // `phase` is captured from the first render; it's 'run' unless the intro was
-    // already seen this session, in which case there's nothing to drive.
     if (phase !== 'run') return
 
     // Lock scroll beneath the overlay.
@@ -98,7 +95,7 @@ export default function Preloader() {
         clearInterval(interval)
         startLeaving()
       }
-    }, 40)
+    }, 30)
 
     // Hard safety net: whatever happens, the overlay is gone by this deadline.
     later(finish, COUNT_MS + REVEAL_MS + 400)
@@ -117,11 +114,30 @@ export default function Preloader() {
 
   if (phase === 'done') return null
 
+  const t = pct / 100
   return (
-    // aria-hidden: a decorative, self-dismissing intro shouldn't be announced,
-    // and this hides BrandedLoader's role="status"/aria-live from assistive tech.
+    // aria-hidden: a decorative, self-dismissing intro shouldn't be announced.
     <div className={`intro${phase === 'leave' ? ' intro--leaving' : ''}`} aria-hidden="true">
-      <BrandedLoader label={`${pct}%`} />
+      <div className="flex h-full flex-col items-center justify-center gap-6 px-6">
+        <p className="elastic text-[clamp(4rem,22vw,16rem)] text-(--color-fg)">
+          {Array.from(WORD).map((ch, i) => {
+            // Each letter starts a little later than the one before it.
+            const local = easeOut(clamp01(t * 1.6 - i * 0.15))
+            return (
+              <span
+                key={i}
+                className="elastic-char"
+                style={{ '--w': 50 + local * 100, '--g': 150 + local * 750 }}
+              >
+                {ch}
+              </span>
+            )
+          })}
+        </p>
+        <p className="font-display text-(length:--fs-h4) font-bold tabular-nums text-(--color-pink)">
+          {String(pct).padStart(3, '0')}
+        </p>
+      </div>
     </div>
   )
 }
