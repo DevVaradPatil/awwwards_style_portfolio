@@ -1,157 +1,153 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import Container from '@/components/system/Container.jsx'
-import GradientBlob from '@/components/primitives/GradientBlob.jsx'
-import SplitText from '@/components/primitives/SplitText.jsx'
-import Reveal from '@/components/primitives/Reveal.jsx'
+import ElasticText from '@/components/primitives/ElasticText.jsx'
+import WorkRing from '@/components/primitives/WorkRing.jsx'
 import { projects, projectTags } from '@/data/projects.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
 import { pageMeta } from '@/data/siteMeta.js'
 
 const FILTERS = ['All', ...projectTags]
+const years = projects.map((p) => p.year).filter(Boolean)
+const span = `${Math.min(...years)}–${Math.max(...years)}`
 
 export default function Work() {
   useDocumentMeta(pageMeta.work)
   const [filter, setFilter] = useState('All')
 
-  const visible = useMemo(() => {
-    if (filter === 'All') return projects
-    return projects.filter((p) => p.tags.includes(filter))
-  }, [filter])
+  const visible = useMemo(
+    () => (filter === 'All' ? projects : projects.filter((p) => p.tags.includes(filter))),
+    [filter],
+  )
 
   return (
     <>
-      {/* HEADER */}
-      <section className="relative overflow-hidden pt-40 pb-16">
-        <GradientBlob
-          variant="iris"
-          size={620}
-          blur={160}
-          opacity={0.35}
-          className="top-[-180px] right-[-160px]"
-        />
-        <Container className="relative">
-          <p className="font-mono text-(length:--fs-xs) uppercase tracking-[0.4em] text-(--color-ink-60)">
-            Selected work · 2022 → 2026
-          </p>
-          <h1 className="mt-6 font-display text-(length:--fs-display) leading-[1.02]">
-            <SplitText by="word" trigger="mount">Things I&apos;ve </SplitText>
-            <SplitText by="word" trigger="mount" delay={0.15} className="brand-gradient-text">
-              built &amp; shipped.
-            </SplitText>
+      <section className="relative overflow-hidden bg-(--color-ink) pt-32 pb-10 md:pt-40">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-14">
+          <h1 className="font-normal">
+            <span className="sr-only">Selected work</span>
+            <ElasticText
+              text="WORK"
+              label=""
+              aria-hidden="true"
+              reach={1.3}
+              width={[70, 150]}
+              weight={[350, 900]}
+              className="text-[clamp(5rem,20vw,20rem)] text-(--color-fg)"
+            />
           </h1>
-          <p className="mt-8 max-w-2xl text-(length:--fs-body) text-(--color-ink-60)">
-            A range of AI products, full-stack apps, e-commerce, dev tools, and
-            immersive 3D experiences — from client work to open-source.
-          </p>
-        </Container>
+          <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <p className="max-w-xl text-(length:--fs-h4) text-(--color-fg-muted)">
+              {projects.length} projects, {span}. AI products, full-stack apps, Android apps, client
+              sites and experiments. Drag the ring or use the list below.
+            </p>
+            <FilterBar value={filter} onChange={setFilter} />
+          </div>
+        </div>
+
+        {/* Re-key so the ring re-lays-out for the new card count. */}
+        <WorkRing key={filter} projects={visible} className="mt-6 md:mt-10" />
       </section>
 
-      {/* FILTER CHIPS */}
-      <section className="sticky top-[64px] z-20 border-y border-(--color-stroke) bg-(--color-void)/85 py-4 backdrop-blur">
-        <Container>
-          <div className="flex flex-wrap items-center gap-2">
-            {FILTERS.map((f) => {
-              const active = f === filter
-              return (
-                <button
-                  key={f}
-                  type="button"
-                  onClick={() => setFilter(f)}
-                  aria-pressed={active}
-                  className={`rounded-(--radius-pill) border px-4 py-2 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] transition-colors ${
-                    active
-                      ? 'border-(--color-cyan) bg-(--color-cyan)/15 text-(--color-cyan)'
-                      : 'border-(--color-stroke-strong) text-(--color-ink-60) hover:border-(--color-ink-60) hover:text-(--color-ink-100)'
-                  }`}
-                >
-                  {f}
-                </button>
-              )
-            })}
-            <span className="ml-auto font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-30)">
+      <section aria-label="Project index" className="room-bone py-20 md:py-28">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-14">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="text-(length:--fs-h2)">Index</h2>
+            <p className="text-(length:--fs-sm) tabular-nums text-(--color-type-muted)">
               {visible.length} {visible.length === 1 ? 'project' : 'projects'}
-            </span>
+              {filter !== 'All' && ` · ${filter}`}
+            </p>
           </div>
-        </Container>
-      </section>
-
-      {/* GRID */}
-      <section className="relative py-20 md:py-28">
-        <Container>
-          {/* Re-keying by filter replays the staggered entrance on each change. */}
-          <div
-            key={filter}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {visible.map((p, i) => (
-              <div
-                key={p.slug}
-                className="card-enter"
-                style={{ animationDelay: `${i * 0.03}s` }}
-              >
-                <ProjectCard project={p} />
-              </div>
-            ))}
-          </div>
-
-          {visible.length === 0 && (
-            <Reveal className="py-20 text-center font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-              No projects under this filter — yet.
-            </Reveal>
-          )}
-        </Container>
+          <ProjectIndex items={visible} />
+        </div>
       </section>
     </>
   )
 }
 
-function ProjectCard({ project }) {
+function FilterBar({ value, onChange }) {
   return (
-    <Link
-      to={`/work/${project.slug}`}
-      aria-label={`Open case study: ${project.title}`}
-      data-cursor-label="View"
-      className="group block h-full overflow-hidden rounded-(--radius-lg) border border-(--color-stroke) bg-(--color-elev) transition-colors hover:border-(--color-stroke-strong)"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden bg-(--color-void)">
-        <img
-          src={project.image}
-          alt={`${project.title} — preview`}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-(--color-void)/80 via-transparent to-transparent" />
-        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-          {project.tags.slice(0, 2).map((t) => (
-            <span
-              key={t}
-              className="rounded-(--radius-pill) border border-(--color-stroke-strong) bg-(--color-void)/60 px-3 py-1 font-mono text-(length:--fs-xs) uppercase tracking-[0.25em] text-(--color-ink-100) backdrop-blur"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-        <span className="absolute top-4 right-4 font-mono text-(length:--fs-xs) uppercase tracking-[0.3em] text-(--color-ink-30)">
-          {project.year}
-        </span>
-      </div>
+    <div role="group" aria-label="Filter projects" className="flex flex-wrap gap-x-5 gap-y-2">
+      {FILTERS.map((f) => {
+        const active = f === value
+        return (
+          <button
+            key={f}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(f)}
+            className={`nav-underline py-1 font-display text-(length:--fs-sm) font-bold [font-stretch:115%] transition-colors ${
+              active ? 'text-(--color-pink)' : 'text-(--color-fg-muted) hover:text-(--color-fg)'
+            }`}
+          >
+            {f}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
-      <div className="flex items-start justify-between gap-4 p-5">
-        <div>
-          <h3 className="font-display text-(length:--fs-h4) text-(--color-ink-100)">
-            {project.title}
-          </h3>
-          <p className="mt-2 line-clamp-2 text-(length:--fs-sm) text-(--color-ink-60)">
-            {project.summary}
-          </p>
-        </div>
-        <span className="mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-(--color-stroke-strong) text-(--color-ink-100) transition-colors group-hover:border-(--color-cyan) group-hover:text-(--color-cyan)">
-          <ArrowUpRight size={14} strokeWidth={2} />
-        </span>
+/**
+ * The list view: one row per project. On fine pointers, hovering a row shows
+ * its screenshot floating beside the cursor.
+ */
+function ProjectIndex({ items }) {
+  const previewRef = useRef(null)
+  const [hovered, setHovered] = useState(null)
+
+  const move = (e) => {
+    const el = previewRef.current
+    if (!el) return
+    el.style.transform = `translate3d(${e.clientX + 24}px, ${e.clientY - 90}px, 0)`
+  }
+
+  return (
+    <div className="relative mt-10" onPointerMove={move} onPointerLeave={() => setHovered(null)}>
+      <ul className="border-b border-(--color-line)">
+        {items.map((p) => (
+          <li key={p.slug} className="border-t border-(--color-line)">
+            <Link
+              to={`/work/${p.slug}`}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(p)}
+              className="group grid grid-cols-[3.5rem_1fr_auto] items-baseline gap-4 py-5 md:grid-cols-[5rem_1fr_16rem_auto] md:py-6"
+            >
+              <span className="text-(length:--fs-sm) tabular-nums text-(--color-type-muted)">{p.year}</span>
+              <span className="min-w-0 font-display text-(length:--fs-h3) font-extrabold [font-stretch:118%] text-(--color-type) transition-[color,transform] duration-300 group-hover:translate-x-2 group-hover:text-(--color-blue)">
+                {p.title}
+              </span>
+              <span className="hidden text-(length:--fs-sm) text-(--color-type-muted) md:block">
+                {p.tags.join(' · ')}
+              </span>
+              <ArrowUpRight
+                size={22}
+                strokeWidth={2.2}
+                className="text-(--color-type) transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+              />
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {items.length === 0 && (
+        <p className="py-16 text-center text-(--color-type-muted)">No projects under this filter yet.</p>
+      )}
+
+      {/* Floating preview — decorative, mouse only. */}
+      <div
+        ref={previewRef}
+        aria-hidden="true"
+        className={`pointer-events-none fixed top-0 left-0 z-30 hidden w-72 transition-opacity duration-200 md:block ${
+          hovered ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {hovered && (
+          <img
+            src={hovered.image}
+            alt=""
+            className="aspect-[16/10] w-full rounded-(--radius-md) object-cover object-top shadow-[0_24px_48px_rgba(0,0,0,0.35)]"
+          />
+        )}
       </div>
-    </Link>
+    </div>
   )
 }

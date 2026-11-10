@@ -302,7 +302,8 @@ canvas {
 .link-underline:focus-visible::after,
 .nav-underline:hover::after,
 .nav-underline:focus-visible::after,
-.nav-underline[aria-current="page"]::after {
+.nav-underline[aria-current="page"]::after,
+.nav-underline[aria-pressed="true"]::after {
   transform: scaleX(1);
   transform-origin: left center;
 }

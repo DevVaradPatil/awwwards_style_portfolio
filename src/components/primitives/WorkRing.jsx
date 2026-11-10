@@ -29,7 +29,8 @@ export default function WorkRing({ projects, className = '' }) {
       const stage = stageRef.current
       if (!stage) return
       const w = stage.clientWidth
-      const cardW = w < 640 ? 210 : w < 1024 ? 300 : 380
+      // Big rings (many projects) use smaller cards so the far side stays in frame.
+      const cardW = w < 640 ? 210 : w < 1024 ? 300 : n > 8 ? 320 : 380
       const radius = Math.round(cardW / 2 / Math.tan(Math.PI / Math.max(n, 3)) + 48)
       state.current.radius = radius
       cardsRef.current.forEach((card, i) => {
