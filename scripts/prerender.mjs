@@ -221,4 +221,23 @@ for (const p of projects) {
   count++
 }
 
+// llms.txt: a plain Markdown map of the site for AI crawlers, built from the
+// same data so it can't drift.
+const mdLink = ([href, text]) => `- [${text}](${SITE.url}${href})`
+writeFileSync(
+  resolve(DIST, 'llms.txt'),
+  [
+    `# ${SITE.name}`,
+    '',
+    `> ${SITE.defaultDescription}`,
+    '',
+    '## Pages',
+    ...NAV.map(mdLink),
+    '',
+    '## Projects',
+    ...projects.map((p) => `${mdLink([`/work/${p.slug}`, p.title])}: ${p.summary}`),
+    '',
+  ].join('\n'),
+)
+
 console.log(`[prerender] Wrote ${count} route HTML files (${projects.length} case studies).`)

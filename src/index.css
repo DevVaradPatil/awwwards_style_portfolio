@@ -20,7 +20,7 @@
   /* Text on ink / blue */
   --color-fg: #f2f2ee;
   --color-fg-muted: #9d9da6;
-  --color-fg-faint: #5d5d66;
+  --color-fg-faint: #85858e;
 
   /* Text on bone */
   --color-type: #111114;
@@ -134,7 +134,9 @@ p {
 .room-blue {
   background-color: var(--color-blue);
   color: var(--color-fg);
-  --color-fg-muted: rgba(242, 242, 238, 0.78);
+  --color-fg-muted: rgba(242, 242, 238, 0.9);
+  /* Lighter pink here: the standard one is only 3.3:1 on electric blue. */
+  --color-pink: #ffc4e7;
   --color-line: rgba(242, 242, 238, 0.24);
 }
 

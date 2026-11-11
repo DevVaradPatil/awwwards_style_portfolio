@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 /**
  * Preloader — the site's entry moment.
@@ -112,6 +112,22 @@ export default function Preloader() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Letters are absolutely placed and spread with transforms. Left in normal
+  // flow, every width change pushes its neighbours sideways, and Chrome counts
+  // each of those as a layout shift (CLS 0.25 on desktop). Transforms don't count.
+  const wordRef = useRef(null)
+  useLayoutEffect(() => {
+    const word = wordRef.current
+    if (!word) return
+    const letters = [...word.children]
+    const widths = letters.map((el) => el.getBoundingClientRect().width)
+    let x = (word.clientWidth - widths.reduce((a, b) => a + b, 0)) / 2
+    letters.forEach((el, i) => {
+      el.style.transform = `translateX(${x}px)`
+      x += widths[i]
+    })
+  }, [pct])
+
   if (phase === 'done') return null
 
   const t = pct / 100
@@ -119,14 +135,14 @@ export default function Preloader() {
     // aria-hidden: a decorative, self-dismissing intro shouldn't be announced.
     <div className={`intro${phase === 'leave' ? ' intro--leaving' : ''}`} aria-hidden="true">
       <div className="flex h-full flex-col items-center justify-center gap-6 px-6">
-        <p className="elastic text-[clamp(4rem,22vw,16rem)] text-(--color-fg)">
+        <p ref={wordRef} className="elastic relative h-[0.86em] w-full text-[min(15.5vw,16rem)] text-(--color-fg)">
           {Array.from(WORD).map((ch, i) => {
             // Each letter starts a little later than the one before it.
             const local = easeOut(clamp01(t * 1.6 - i * 0.15))
             return (
               <span
                 key={i}
-                className="elastic-char"
+                className="elastic-char absolute top-0 left-0"
                 style={{ '--w': 50 + local * 100, '--g': 150 + local * 750 }}
               >
                 {ch}
