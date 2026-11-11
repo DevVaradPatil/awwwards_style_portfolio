@@ -6,7 +6,8 @@
 
    Four "rooms": every section is one full-bleed block of a single color.
      ink  — hero, work, case studies, footer
-     blue — story chapters, section breaks
+     midnight (.room-blue) — story chapters, section breaks; the big
+       word on it is drawn in --color-blue-bright
      bone — reading pages (About, Contact)
      pink — the one accent: active states, the closing call to action
    --------------------------------------------------------------- */
@@ -14,6 +15,8 @@
   /* Rooms */
   --color-ink: #0b0b0d;
   --color-blue: #2433ff;
+  --color-midnight: #0f1236;
+  --color-blue-bright: #6b78ff; /* blue type on midnight, 5:1 */
   --color-bone: #ecece8;
   --color-pink: #ff8ad0;
 
@@ -132,12 +135,10 @@ p {
 }
 
 .room-blue {
-  background-color: var(--color-blue);
+  background-color: var(--color-midnight);
   color: var(--color-fg);
-  --color-fg-muted: rgba(242, 242, 238, 0.9);
-  /* Lighter pink here: the standard one is only 3.3:1 on electric blue. */
-  --color-pink: #ffc4e7;
-  --color-line: rgba(242, 242, 238, 0.24);
+  --color-fg-muted: rgba(242, 242, 238, 0.75);
+  --color-line: rgba(242, 242, 238, 0.16);
 }
 
 .room-pink {

@@ -33,7 +33,7 @@ There is no test suite. CI (`.github/workflows/ci.yml`) runs `npm run lint` and 
 
 ## Design system ("Elastic")
 
-- **Rooms.** Every section is one full-bleed block of a single color: ink `--color-ink` (hero, work, case studies, footer), electric blue `.room-blue` (story, Now, next project), bone `.room-bone` (reading pages: About details, Contact, project index), pink `.room-pink` (the closing call to action only). A room class re-points `--color-fg`, `--color-fg-muted`, `--color-line` for its surface, so shared components read correctly anywhere. On bone, body text uses `--color-type` / `--color-type-muted`.
+- **Rooms.** Every section is one full-bleed block of a single color: ink `--color-ink` (hero, work, case studies, footer), midnight `.room-blue` (story, Now, next project; `--color-midnight`, the story word in `--color-blue-bright`; electric `--color-blue` stays an accent on bone), bone `.room-bone` (reading pages: About details, Contact, project index), pink `.room-pink` (the closing call to action only). A room class re-points `--color-fg`, `--color-fg-muted`, `--color-line` for its surface, so shared components read correctly anywhere. On bone, body text uses `--color-type` / `--color-type-muted`.
 - **Type.** Display face is **Anybody**, a variable font with width (50–150) and weight (100–900) axes; body is Inter; JetBrains Mono only inside the code portrait. There are no gradient text, glow blobs, glass cards, pill badges or tiny uppercase mono labels — avoid reintroducing them.
 - **Header** is white type with `mix-blend-mode: difference` (inverts over any room). The mobile menu is a sibling of the blended bar, never a child.
 

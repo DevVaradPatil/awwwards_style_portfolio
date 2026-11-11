@@ -7,7 +7,7 @@ import { story } from '@/data/story.js'
 gsap.registerPlugin(ScrollTrigger)
 
 /**
- * Story — four chapters on the blue room.
+ * Story — four chapters on the midnight room (.room-blue), big word in bright blue.
  *
  * Desktop (≥768px): the section pins for one screen per chapter and scroll
  * steps through them; only the active chapter is shown. Mobile: no pin (it
@@ -68,7 +68,7 @@ export default function Story() {
               reach={1.2}
               width={[74, 150]}
               weight={[400, 900]}
-              className="mt-3 text-[clamp(3rem,12vw,12.5rem)] text-(--color-fg)"
+              className="mt-3 text-[clamp(3rem,12vw,12.5rem)] text-(--color-blue-bright)"
             />
             <div className="mt-6 grid max-w-3xl gap-3 md:mt-10">
               <p className="font-display text-(length:--fs-h3) font-bold [font-stretch:112%] text-(--color-fg)">
@@ -85,7 +85,7 @@ export default function Story() {
             <li key={c.id} className="grid gap-2">
               <span
                 className={`h-[3px] transition-colors duration-500 ${
-                  i <= active ? 'bg-(--color-fg)' : 'bg-(--color-line)'
+                  i <= active ? 'bg-(--color-blue-bright)' : 'bg-(--color-line)'
                 }`}
               />
               <span
