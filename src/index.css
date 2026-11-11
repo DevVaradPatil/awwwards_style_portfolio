@@ -157,11 +157,21 @@ p {
   line-height: 0.86;
 }
 
+/* Letters are absolutely placed and spread with the `translate` property
+   (ElasticText computes x from each letter's width). In normal flow every
+   width change shoves the neighbours sideways, and Chrome counts each shove as
+   a layout shift (desktop CLS hit 0.2). Transforms are not layout shifts.
+   `translate` rather than `transform` so the squash/pop transforms compose. */
 .elastic-row {
   display: block;
+  position: relative;
+  height: 1lh;
 }
 
 .elastic-char {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: inline-block;
   font-variation-settings: "wdth" var(--w, 100), "wght" var(--g, 700);
 }
