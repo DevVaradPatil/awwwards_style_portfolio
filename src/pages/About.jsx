@@ -11,6 +11,7 @@ import { skillGroups } from '@/data/skills.js'
 import { experience } from '@/data/experience.js'
 import { education } from '@/data/education.js'
 import { testimonials } from '@/data/testimonials.js'
+import { research } from '@/data/research.js'
 import useDocumentMeta from '@/lib/useDocumentMeta.js'
 import { pageMeta } from '@/data/siteMeta.js'
 
@@ -23,6 +24,7 @@ export default function About() {
       <Hero />
       <Now />
       <WhatIDo />
+      <Research />
       <Journey />
       <Testimonials />
       <CallToAction />
@@ -160,6 +162,35 @@ function WhatIDo() {
             <li key={p.id} className="grid content-start gap-3">
               <h3 className="text-(length:--fs-h2) text-(--color-fg)">{p.title}</h3>
               <p className="max-w-lg text-(length:--fs-h4) leading-relaxed text-(--color-fg-muted)">{p.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+/* ---------- RESEARCH (ink) ---------- */
+function Research() {
+  return (
+    <section aria-label="Research" className="border-t border-(--color-line) bg-(--color-ink) py-20 md:py-28">
+      <div className={wrap}>
+        <h2 className="text-(length:--fs-h1)">Research</h2>
+        <ul className="mt-12 grid gap-x-16 gap-y-12 md:grid-cols-2">
+          {research.map((r) => (
+            <li key={r.id} className="grid content-start gap-3 border-t-2 border-(--color-line) pt-5">
+              <p className="text-(length:--fs-sm) font-semibold text-(--color-pink)">{r.meta}</p>
+              <h3 className="text-(length:--fs-h3) text-(--color-fg)">{r.title}</h3>
+              <p className="max-w-xl leading-relaxed text-(--color-fg-muted)">{r.body}</p>
+              <a
+                href={r.href}
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1.5 justify-self-start font-display text-(length:--fs-sm) font-bold [font-stretch:115%] text-(--color-fg) transition-colors hover:text-(--color-pink)"
+              >
+                {r.linkLabel}
+                <ArrowUpRight size={16} strokeWidth={2.2} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </a>
             </li>
           ))}
         </ul>
