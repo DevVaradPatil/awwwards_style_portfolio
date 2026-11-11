@@ -8,6 +8,7 @@ import googlePlayBadge from '@/assets/apps/google-play-badge.png'
 import NotFound from '@/pages/NotFound.jsx'
 import useDocumentMeta, { SITE } from '@/lib/useDocumentMeta.js'
 import { titleLines, fitFontSize } from '@/lib/titleLines.js'
+import { pageMeta } from '@/data/siteMeta.js'
 
 export default function CaseStudy() {
   const { slug } = useParams()
@@ -23,9 +24,11 @@ export default function CaseStudy() {
   }, [slug])
 
   useDocumentMeta({
-    title: project ? project.title : 'Case study',
-    description: project ? project.summary : 'Project case study by Varad Patil.',
+    // This effect runs after NotFound's own, so an unknown slug must say 404 here too.
+    title: project ? project.title : pageMeta.notFound.title,
+    description: project ? project.summary : pageMeta.notFound.description,
     path: `/work/${slug}`,
+    noindex: !project,
     jsonLd: project
       ? {
           '@context': 'https://schema.org',

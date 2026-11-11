@@ -29,8 +29,9 @@ const JSONLD_ID = 'page-jsonld'
  * Pass { title, description, path } and it patches <title>, OG/Twitter, canonical.
  * Optionally pass { jsonLd } (a schema.org object) to inject a page-scoped
  * JSON-LD <script>; it is removed on unmount so it can't leak to the next route.
+ * Pass { noindex: true } for pages search engines should drop (the 404).
  */
-export default function useDocumentMeta({ title, description, path, jsonLd } = {}) {
+export default function useDocumentMeta({ title, description, path, jsonLd, noindex = false } = {}) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${SITE.name}` : SITE.defaultTitle
     const desc = description || SITE.defaultDescription
@@ -55,6 +56,14 @@ export default function useDocumentMeta({ title, description, path, jsonLd } = {
 
     setCanonical(url)
   }, [title, description, path])
+
+  // The SPA rewrite answers unknown URLs with 200, so the 404 page tells
+  // search engines not to index it. Removed again when leaving that page.
+  useEffect(() => {
+    if (!noindex) return
+    setMeta('robots', 'noindex')
+    return () => document.head.querySelector('meta[name="robots"]')?.remove()
+  }, [noindex])
 
   // Page-scoped JSON-LD. Keyed on the serialized value so it only re-runs when
   // the content actually changes, not on every render.

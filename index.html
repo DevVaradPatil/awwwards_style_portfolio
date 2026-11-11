@@ -57,34 +57,49 @@
 
     <title>Varad Patil — Developer · Designer · AI Builder</title>
 
-    <!-- Person schema -->
+    <!-- Site-wide schema: who this is, and the site's name (Google uses the
+         WebSite node for the name shown above search results). -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Varad Patil",
-        "url": "https://varaddev.vercel.app",
-        "email": "mailto:varadapatil123@gmail.com",
-        "jobTitle": "Full-stack Developer & AI Builder",
-        "description": "Full-stack developer and AI enthusiast crafting fast, scalable, immersive web experiences.",
-        "alumniOf": {
-          "@type": "CollegeOrUniversity",
-          "name": "Indian Institute of Technology Kanpur"
-        },
-        "knowsAbout": [
-          "Full-stack development",
-          "Artificial Intelligence",
-          "React",
-          "Three.js",
-          "GSAP",
-          "Mobile development",
-          "UI/UX design"
-        ],
-        "sameAs": [
-          "https://github.com/devVaradPatil",
-          "https://www.linkedin.com/in/varad-patil-web-dev/",
-          "https://varadiitk.vercel.app",
-          "https://codepen.io/varadPatil"
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://varaddev.vercel.app/#person",
+            "name": "Varad Patil",
+            "url": "https://varaddev.vercel.app",
+            "image": "https://varaddev.vercel.app/og-image.jpg",
+            "email": "mailto:varadapatil123@gmail.com",
+            "jobTitle": "Full-stack Developer & AI Builder",
+            "description": "Full-stack developer and AI builder doing an M.Tech in AI for Sustainability at IIT Kanpur.",
+            "alumniOf": [
+              { "@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Kanpur" },
+              { "@type": "CollegeOrUniversity", "name": "Rajarambapu Institute of Technology" }
+            ],
+            "knowsAbout": [
+              "Full-stack development",
+              "Artificial Intelligence",
+              "React",
+              "Next.js",
+              "Flutter",
+              "GSAP",
+              "Mobile development",
+              "UI/UX design"
+            ],
+            "sameAs": [
+              "https://github.com/devVaradPatil",
+              "https://www.linkedin.com/in/varad-patil-web-dev/",
+              "https://varadiitk.vercel.app",
+              "https://codepen.io/varadPatil"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://varaddev.vercel.app/#website",
+            "url": "https://varaddev.vercel.app",
+            "name": "Varad Patil",
+            "publisher": { "@id": "https://varaddev.vercel.app/#person" }
+          }
         ]
       }
     </script>

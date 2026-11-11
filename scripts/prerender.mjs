@@ -16,7 +16,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
-import { SITE, staticPrerenderRoutes } from '../src/data/siteMeta.js'
+import { SITE, pageMeta, staticPrerenderRoutes } from '../src/data/siteMeta.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -49,7 +49,7 @@ function replaceMeta(html, attr, key, content) {
   return html.replace(re, `<meta ${attr}="${key}" content="${escAttr(content)}" />`)
 }
 
-function buildHtml({ title, description, path, ogImage, ogImageAlt, jsonLd }) {
+function buildHtml({ title, description, path, ogImage, ogImageAlt, jsonLd, links = [] }) {
   const t = fullTitle(title)
   const desc = description || SITE.defaultDescription
   const url = `${SITE.url}${path}`
@@ -74,10 +74,37 @@ function buildHtml({ title, description, path, ogImage, ogImageAlt, jsonLd }) {
   if (jsonLd) {
     html = html.replace(
       '</head>',
-      `  <script type="application/ld+json">${escJsonLd(jsonLd)}</script>\n  </head>`,
+      // Same id useDocumentMeta writes to, so the app reuses this tag instead
+      // of adding a second copy of the schema once it boots.
+      `  <script id="page-jsonld" type="application/ld+json">${escJsonLd(jsonLd)}</script>\n  </head>`,
     )
   }
+
+  // Readable text and real links for clients that don't run JS (non-Google
+  // crawlers, link previews, AI crawlers). <noscript>, not inside #root, so
+  // visitors with JS never see a flash of unstyled text.
+  html = html.replace(
+    '<div id="root"></div>',
+    `<div id="root"></div>\n    ${noscriptBody({ heading: title || SITE.name, description: desc, links })}`,
+  )
   return html
+}
+
+const NAV = [
+  ['/', 'Home'],
+  ['/work', 'Work'],
+  ['/about', 'About'],
+  ['/playground', 'Motion Lab'],
+  ['/contact', 'Contact'],
+]
+
+function noscriptBody({ heading, description, links }) {
+  const li = ([href, text]) => `<li><a href="${escAttr(href)}">${escAttr(text)}</a></li>`
+  return (
+    `<noscript><main><h1>${escAttr(heading)}</h1><p>${escAttr(description)}</p>` +
+    (links.length ? `<ul>${links.map(li).join('')}</ul>` : '') +
+    `<nav><ul>${NAV.map(li).join('')}</ul></nav></main></noscript>`
+  )
 }
 
 function writeRoute(path, html) {
@@ -137,7 +164,7 @@ function parseProjects() {
     const chunk = projectsSrc.slice(start, end)
     const slug = slugMatches[i][1]
     const title = chunk.match(/title:\s*(['"])(.*?)\1/)?.[2]
-    const summary = chunk.match(/summary:\s*(['"])([\s\S]*?)\1\s*,/)?.[2]
+    const summary = chunk.match(/summary:\s*(['"])([\s\S]*?)\1\s*,/)?.[2]?.replace(/\\'/g, "'")
     const year = chunk.match(/year:\s*(\d+)/)?.[1]
     const tags = [...(chunk.match(/tags:\s*\[([^\]]*)\]/)?.[1] || '').matchAll(/['"]([^'"]+)['"]/g)].map(
       (t) => t[1],
@@ -155,14 +182,19 @@ function parseProjects() {
 // --- run --------------------------------------------------------------------
 let count = 0
 
-// Static routes (home stays as the untouched root index.html).
+const projects = parseProjects()
+const projectLinks = projects.map((p) => [`/work/${p.slug}`, p.title])
+
+// Home: same head as index.html, plus the crawlable body.
+writeFileSync(resolve(DIST, 'index.html'), buildHtml({ ...pageMeta.home, links: projectLinks }))
+
+// Static routes.
 for (const route of staticPrerenderRoutes) {
-  writeRoute(route.path, buildHtml(route))
+  writeRoute(route.path, buildHtml({ ...route, links: route === pageMeta.work ? projectLinks : [] }))
   count++
 }
 
 // Case studies.
-const projects = parseProjects()
 const bad = projects.filter((p) => !p.title || !p.summary)
 if (bad.length) {
   console.warn(`[prerender] ${bad.length} project(s) missing title/summary — check projects.js parsing.`)
@@ -184,7 +216,7 @@ for (const p of projects) {
   const ogImageAlt = ogImage ? `${p.title} — project preview` : undefined
   writeRoute(
     path,
-    buildHtml({ title: p.title, description: p.summary, path, ogImage, ogImageAlt, jsonLd }),
+    buildHtml({ title: p.title, description: p.summary, path, ogImage, ogImageAlt, jsonLd, links: [['/work', 'All projects']] }),
   )
   count++
 }

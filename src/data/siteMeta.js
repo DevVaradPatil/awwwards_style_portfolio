@@ -43,7 +43,7 @@ export const pageMeta = {
       'Have an idea worth shipping? Reach Varad Patil for full-stack, AI and product collaborations.',
     path: '/contact',
   },
-  notFound: { title: '404', description: 'Page not found.', path: '/404' },
+  notFound: { title: '404', description: 'Page not found.', path: '/404', noindex: true },
 }
 
 // Routes the prerender script emits as their own static HTML (home stays as the
